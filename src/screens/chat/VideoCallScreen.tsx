@@ -135,24 +135,24 @@ const VideoCallScreen: React.FC = () => {
           )}
 
           {/* Video Call Controls */}
-          <View className="absolute bottom-8 flex-row justify-around w-full bg-black bg-opacity-60 rounded-full py-4 items-center">
-            <TouchableOpacity className="items-center justify-center p-2" onPress={toggleMute}>
-              <Icon name={isMuted ? "microphone-off" : "microphone"} size={30} color="white" />
+          <View className="absolute bottom-8 flex-row justify-center w-full bg-black bg-opacity-60 rounded-full py-4 px-4 items-center">
+            <TouchableOpacity className="items-center justify-center p-2 mx-2" onPress={toggleMute}>
+              <Icon name={isMuted ? "microphone-off" : "microphone"} size={30} color="#FFD700" /> {/* Gold */}
               <Text className="text-white text-xs mt-1">{isMuted ? 'Unmute' : 'Mute'}</Text>
             </TouchableOpacity>
-            <TouchableOpacity className="items-center justify-center p-2" onPress={toggleCamera}>
-              <Icon name={isCameraOn ? "video" : "video-off"} size={30} color="white" />
+            <TouchableOpacity className="items-center justify-center p-2 mx-2" onPress={toggleCamera}>
+              <Icon name={isCameraOn ? "video" : "video-off"} size={30} color="#00BFFF" /> {/* Deep Sky Blue */}
               <Text className="text-white text-xs mt-1">{isCameraOn ? 'Camera Off' : 'Camera On'}</Text>
             </TouchableOpacity>
             <TouchableOpacity className="bg-red-500 rounded-full w-16 h-16 justify-center items-center mx-2" onPress={handleEndCall}>
-              <Icon name="phone-hangup" size={30} color="white" />
+              <Icon name="phone-hangup" size={30} color="white" /> {/* Keep hangup white for contrast */}
             </TouchableOpacity>
-            <TouchableOpacity className="items-center justify-center p-2" onPress={toggleSpeaker}>
-              <Icon name={isSpeakerOn ? "volume-high" : "volume-off"} size={30} color="white" />
+            <TouchableOpacity className="items-center justify-center p-2 mx-2" onPress={toggleSpeaker}>
+              <Icon name={isSpeakerOn ? "volume-high" : "volume-off"} size={30} color="#32CD32" /> {/* Lime Green */}
               <Text className="text-white text-xs mt-1">{isSpeakerOn ? 'Speaker Off' : 'Speaker On'}</Text>
             </TouchableOpacity>
-            <TouchableOpacity className="items-center justify-center p-2">
-              <Icon name="image-multiple" size={30} color="white" />
+            <TouchableOpacity className="items-center justify-center p-2 mx-2">
+              <Icon name="image-multiple" size={30} color="#FF6347" /> {/* Tomato */}
               <Text className="text-white text-xs mt-1">Gallery</Text>
             </TouchableOpacity>
           </View>
