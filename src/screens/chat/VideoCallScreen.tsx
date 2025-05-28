@@ -3,8 +3,9 @@ import { View, Text, Dimensions, Image, TouchableOpacity, Platform, StatusBar, A
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Video from 'react-native-video';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { useRoute, useNavigation, NavigationProp } from '@react-navigation/native';
 import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
+import { RootStackParamList } from '../../navigation/types';
 
 const { width, height } = Dimensions.get('window');
 
@@ -43,12 +44,24 @@ const VideoCallScreen: React.FC = () => {
       }
     };
     checkInitialCameraPermission();
+
+    // Set a timeout to end the call and navigate to PremiumScreen after 10 seconds
+    const callTimeout = setTimeout(() => {
+      handleEndCallAndNavigateToPremium();
+    }, 10000); // 10 seconds
+
+    return () => clearTimeout(callTimeout); // Clear timeout if component unmounts
   }, [videoUrls, hasPermission]); // Add hasPermission to dependency array
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const handleEndCall = () => {
     navigation.goBack();
+  };
+
+  const handleEndCallAndNavigateToPremium = () => {
+    navigation.goBack(); // End the video call
+    navigation.navigate('Premium', { fromOnboarding: false }); // Navigate to the PremiumScreen
   };
 
   const toggleMute = () => {
