@@ -4,7 +4,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import ToastManager from 'toastify-react-native';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import './src/locales/i18n';
-import { StatusBar, StyleSheet, Platform, View, AppState, AppStateStatus, NativeModules } from 'react-native';
+import { StatusBar, StyleSheet, Platform, View, AppState, AppStateStatus, NativeModules, Vibration } from 'react-native';
 import { navigationRef } from './src/utils/navigationService';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { AuthProvider } from './src/hooks/authContext';
@@ -166,12 +166,18 @@ const App = () => {
 
   // Function to dismiss the incoming call UI (without navigation)
   const dismissIncomingCallUI = useCallback(() => {
+    console.log('Dismissing incoming call UI and stopping ringtone.');
     setShowIncomingCall(false);
     setIncomingCharacter(null);
     if (ringtoneSound.current) {
-      ringtoneSound.current.stop();
-      ringtoneSound.current.release();
-      ringtoneSound.current = null;
+      ringtoneSound.current.stop(() => {
+        console.log('Ringtone stopped.');
+        ringtoneSound.current?.release();
+        console.log('Ringtone released.');
+        ringtoneSound.current = null;
+      });
+    } else {
+      console.log('No ringtone sound instance to stop/release.');
     }
   }, []);
 
@@ -400,6 +406,15 @@ const App = () => {
     }
   };
 
+  // Trigger incoming call periodically for demonstration
+  useEffect(() => {
+    const interval = setInterval(() => {
+      triggerIncomingCall();
+    }, 30000); // Trigger every 30 seconds
+
+    return () => clearInterval(interval);
+  }, [triggerIncomingCall]);
+
   // Clean up ringtone on component unmount
   useEffect(() => {
     return () => {
@@ -451,7 +466,7 @@ const App = () => {
   return (
     <SafeAreaProvider>
       <StatusBar barStyle="light-content" backgroundColor="#000000" translucent />
-      <GestureHandlerRootView style={styles.container}> {/* Wrap with GestureHandlerRootView */}
+      <GestureHandlerRootView style={styles.container}>
         <AuthProvider>
           <NavigationContainer
             ref={navigationRef}
@@ -466,8 +481,7 @@ const App = () => {
           >
             <AppNavigator triggerIncomingCall={triggerIncomingCall} />
           </NavigationContainer>
-        </AuthProvider>
-        <ToastManager
+        </AuthProvider><ToastManager
           height={60}
           width={300}
           duration={3000}
@@ -490,13 +504,14 @@ const App = () => {
             fontWeight: '500',
           }}
         />
-      </GestureHandlerRootView> {/* Close GestureHandlerRootView */}
+      </GestureHandlerRootView>
       {showSplash && <SplashScreen onAnimationFinish={handleSplashFinish} />}
       {showIncomingCall && incomingCharacter && fetchedVideoUrls.length > 0 && (
         <IncomingCall
           videoUrls={fetchedVideoUrls} // These are passed but not used by IncomingCall itself now
           callerName={incomingCharacter.name}
-          callerImage={incomingCharacter.avatar}
+          callerImage={incomingCharacter.image.uri}
+          backgroundImage={incomingCharacter.backgroundImage.uri} // Pass the background image URI
           onAccept={handleAcceptIncomingCall} // Call the new handler for navigation
           onDecline={dismissIncomingCallUI} // Still dismisses the UI
         />

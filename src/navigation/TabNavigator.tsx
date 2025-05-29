@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Pressable, Dimensions, StyleSheet, Text } from 'react-native';
+import { View, Pressable, StyleSheet, Text, useWindowDimensions } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,74 +21,78 @@ export type TabScreenProps<T extends keyof TabStackParamList> = CompositeScreenP
 >;
 
 const Tab = createMaterialTopTabNavigator<TabStackParamList>();
-const { width, height } = Dimensions.get('window');
 
 // Custom tab bar item to control the layout and appearance
 const CustomTabBar = ({ state, descriptors, navigation }: any) => {
   const insets = useSafeAreaInsets();
-  
+  const { height: windowHeight } = useWindowDimensions();
+
+  // Calculate responsive height for the tab bar
+  const tabBarHeight = Math.max(65, windowHeight * 0.08); // Minimum 65, or 8% of screen height
+
   return (
-    <View 
+    <View
       style={{
         flexDirection: 'row',
         backgroundColor: 'transparent',
-        height: 65 + insets.bottom,
+        height: tabBarHeight + insets.bottom,
         paddingBottom: insets.bottom,
         borderTopColor: 'transparent',
+        marginBottom: 5, // Added marginBottom for better view on some devices
       }}
     >
       {state.routes.map((route: any, index: number) => {
         const { options } = descriptors[route.key];
         const label = options.title || route.name;
         const isFocused = state.index === index;
-        
+
         const onPress = () => {
           const event = navigation.emit({
             type: 'tabPress',
             target: route.key,
             canPreventDefault: true,
           });
-          
+
           if (!isFocused && !event.defaultPrevented) {
             navigation.navigate(route.name);
           }
         };
-        
+
         return (
           <Pressable
             key={route.key}
             onPress={onPress}
             style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
           >
-            <View 
+            <View
               style={{
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: 8,
+                padding: windowHeight * 0.01, // Responsive padding
                 transform: [{ scale: isFocused ? 1.05 : 1 }],
               }}
             >
               <View
                 style={{
-                  padding: 8,
+                  padding: windowHeight * 0.01, // Responsive padding
                   borderRadius: isFocused ? 16 : 12,
                   backgroundColor: isFocused ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
                   borderWidth: 1,
                   borderColor: isFocused ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
                 }}
               >
-                {options.tabBarIcon && options.tabBarIcon({ 
-                  color: isFocused ? '#fff' : 'rgba(255, 255, 255, 0.6)', 
+                {options.tabBarIcon && options.tabBarIcon({
+                  color: isFocused ? '#fff' : 'rgba(255, 255, 255, 0.6)',
                   focused: isFocused,
-                  size: 22 
+                  size: windowHeight * 0.03 // Responsive icon size
                 })}
               </View>
               <Text
                 style={{
-                  fontSize: 11,
+                  fontSize: windowHeight * 0.018, // Responsive font size
                   fontWeight: '500',
                   color: isFocused ? '#fff' : 'rgba(255, 255, 255, 0.6)',
-                  marginTop: 4,
+                  marginTop: windowHeight * 0.005, // Responsive margin
                 }}
               >
                 {label}
@@ -107,13 +111,14 @@ interface TabNavigatorProps {
 
 export const TabNavigator = ({ triggerIncomingCall }: TabNavigatorProps) => {
   const insets = useSafeAreaInsets();
+  const { height: windowHeight } = useWindowDimensions(); // Re-added useWindowDimensions here
 
   return (
     <View style={{ flex: 1, backgroundColor: '#111827' }}>
       <Tab.Navigator
         style={{
           position: 'relative',
-          minHeight: height - (48 + insets.bottom),
+          minHeight: windowHeight - (48 + insets.bottom), // Use windowHeight
         }}
         tabBarPosition="bottom"
         tabBar={props => <CustomTabBar {...props} />}
@@ -132,7 +137,7 @@ export const TabNavigator = ({ triggerIncomingCall }: TabNavigatorProps) => {
             title: 'Home',
             tabBarIcon: ({ color }) => (
               <Animated.View entering={FadeInDown}>
-                <Icon name="home-outline" color={color} size={22} />
+                <Icon name="home-outline" color={color} size={windowHeight * 0.03} />
               </Animated.View>
             ),
           }}
@@ -146,7 +151,7 @@ export const TabNavigator = ({ triggerIncomingCall }: TabNavigatorProps) => {
             title: 'Inbox',
             tabBarIcon: ({ color }) => (
               <Animated.View entering={FadeInDown.delay(100)}>
-                <Icon name="chatbubble-ellipses-outline" color={color} size={22} />
+                <Icon name="chatbubble-ellipses-outline" color={color} size={windowHeight * 0.03} />
               </Animated.View>
             ),
           }}
@@ -158,7 +163,7 @@ export const TabNavigator = ({ triggerIncomingCall }: TabNavigatorProps) => {
             title: 'Favorites',
             tabBarIcon: ({ color }) => (
               <Animated.View entering={FadeInDown.delay(200)}>
-                <Icon name="heart-outline" color={color} size={22} />
+                <Icon name="heart-outline" color={color} size={windowHeight * 0.03} />
               </Animated.View>
             ),
           }}
@@ -170,7 +175,7 @@ export const TabNavigator = ({ triggerIncomingCall }: TabNavigatorProps) => {
             title: 'Profile',
             tabBarIcon: ({ color }) => (
               <Animated.View entering={FadeInDown.delay(300)}>
-                <Icon name="person-outline" color={color} size={22} />
+                <Icon name="person-outline" color={color} size={windowHeight * 0.03} />
               </Animated.View>
             ),
           }}

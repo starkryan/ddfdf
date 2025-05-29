@@ -37,21 +37,19 @@ const VideoCallScreen: React.FC = () => {
     } else {
       setCurrentVideoUrl(null);
     }
-    // Initialize isCameraOn based on current permission status
     const checkInitialCameraPermission = async () => {
       if (hasPermission) {
-        setIsCameraOn(true); // Assume camera is on if permission is already granted
+        setIsCameraOn(true);
       }
     };
     checkInitialCameraPermission();
 
-    // Set a timeout to end the call and navigate to PremiumScreen after 10 seconds
     const callTimeout = setTimeout(() => {
       handleEndCallAndNavigateToPremium();
-    }, 10000); // 10 seconds
+    }, 10000);
 
-    return () => clearTimeout(callTimeout); // Clear timeout if component unmounts
-  }, [videoUrls, hasPermission]); // Add hasPermission to dependency array
+    return () => clearTimeout(callTimeout);
+  }, [videoUrls, hasPermission]);
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
@@ -60,8 +58,8 @@ const VideoCallScreen: React.FC = () => {
   };
 
   const handleEndCallAndNavigateToPremium = () => {
-    navigation.goBack(); // End the video call
-    navigation.navigate('Premium', { fromOnboarding: false }); // Navigate to the PremiumScreen
+    navigation.goBack();
+    navigation.navigate('Premium', { fromOnboarding: false });
   };
 
   const toggleMute = () => {
@@ -69,7 +67,7 @@ const VideoCallScreen: React.FC = () => {
   };
 
   const toggleCamera = async () => {
-    if (!isCameraOn) { // If camera is currently off, try to turn it on
+    if (!isCameraOn) {
       if (!hasPermission) {
         const granted = await requestPermission();
         if (!granted) {
@@ -84,8 +82,8 @@ const VideoCallScreen: React.FC = () => {
           return;
         }
       }
-      setIsCameraOn(true); // Turn camera on
-    } else { // If camera is currently on, turn it off
+      setIsCameraOn(true);
+    } else {
       setIsCameraOn(false);
     }
   };
@@ -94,12 +92,11 @@ const VideoCallScreen: React.FC = () => {
     setIsSpeakerOn(prev => !prev);
   };
 
-  // If camera device is not available, show a message
   if (cameraDevice == null) {
     return (
       <SafeAreaView className="flex-1 bg-black justify-center items-center">
         <StatusBar barStyle="light-content" backgroundColor="transparent" translucent={true} />
-        <Text className="text-white text-lg">No camera device found.</Text>
+        <Text className="text-white text-lg">Waiting</Text>
       </SafeAreaView>
     );
   }
@@ -123,11 +120,9 @@ const VideoCallScreen: React.FC = () => {
             onLoad={(data) => console.log('VideoCallScreen: Video loaded:', data)}
             onError={(error) => console.error('VideoCallScreen: Video error:', error)}
           />
-          {/* Caller's image when video is not playing */}
           {!currentVideoUrl && callerImage && (
             <Image source={{ uri: callerImage }} className="w-full h-full absolute" resizeMode="cover" />
           )}
-          {/* User's small camera preview using VisionCamera */}
           {isCameraOn && (
             <View className="absolute top-16 right-5 w-24 h-40 bg-gray-600 rounded-lg overflow-hidden">
               {hasPermission ? (
@@ -135,9 +130,9 @@ const VideoCallScreen: React.FC = () => {
                   ref={cameraRef}
                   style={StyleSheet.absoluteFill}
                   device={cameraDevice}
-                  isActive={isCameraOn} // Camera is active when isCameraOn is true
-                  video={true} // Enable video capture for live preview
-                  audio={false} // Audio handled separately
+                  isActive={isCameraOn}
+                  video={true}
+                  audio={false}
                 />
               ) : (
                 <View style={StyleSheet.absoluteFill} className="justify-center items-center">
@@ -146,33 +141,42 @@ const VideoCallScreen: React.FC = () => {
               )}
             </View>
           )}
-
-          {/* Video Call Controls */}
           <View className="absolute bottom-8 flex-row justify-center w-full bg-black bg-opacity-60 rounded-full py-4 px-4 items-center">
             <TouchableOpacity className="items-center justify-center p-2 mx-2" onPress={toggleMute}>
-              <Icon name={isMuted ? "microphone-off" : "microphone"} size={30} color="#FFD700" /> {/* Gold */}
-              <Text className="text-white text-xs mt-1">{isMuted ? 'Unmute' : 'Mute'}</Text>
+              <View className="items-center">
+                <Icon name={isMuted ? "microphone-off" : "microphone"} size={30} color="#FFD700" />
+                <Text className="text-white text-xs mt-1">{isMuted ? 'Unmute' : 'Mute'}</Text>
+              </View>
             </TouchableOpacity>
             <TouchableOpacity className="items-center justify-center p-2 mx-2" onPress={toggleCamera}>
-              <Icon name={isCameraOn ? "video" : "video-off"} size={30} color="#00BFFF" /> {/* Deep Sky Blue */}
-              <Text className="text-white text-xs mt-1">{isCameraOn ? 'Camera Off' : 'Camera On'}</Text>
+              <View className="items-center">
+                <Icon name={isCameraOn ? "video" : "video-off"} size={30} color="#00BFFF" />
+                <Text className="text-white text-xs mt-1">{isCameraOn ? 'Camera Off' : 'Camera On'}</Text>
+              </View>
             </TouchableOpacity>
-            <TouchableOpacity className="bg-red-500 rounded-full w-16 h-16 justify-center items-center mx-2" onPress={handleEndCall}>
-              <Icon name="phone-hangup" size={30} color="white" /> {/* Keep hangup white for contrast */}
+            <TouchableOpacity className="bg-red-500 rounded-full w-16 h-16 mx-2" onPress={handleEndCall}>
+              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <Icon name="phone-hangup" size={30} color="white" />
+               
+              </View>
             </TouchableOpacity>
             <TouchableOpacity className="items-center justify-center p-2 mx-2" onPress={toggleSpeaker}>
-              <Icon name={isSpeakerOn ? "volume-high" : "volume-off"} size={30} color="#32CD32" /> {/* Lime Green */}
-              <Text className="text-white text-xs mt-1">{isSpeakerOn ? 'Speaker Off' : 'Speaker On'}</Text>
+              <View className="items-center">
+                <Icon name={isSpeakerOn ? "volume-high" : "volume-off"} size={30} color="#32CD32" />
+                <Text className="text-white text-xs mt-1">{isSpeakerOn ? 'Speaker Off' : 'Speaker On'}</Text>
+              </View>
             </TouchableOpacity>
             <TouchableOpacity className="items-center justify-center p-2 mx-2">
-              <Icon name="image-multiple" size={30} color="#FF6347" /> {/* Tomato */}
-              <Text className="text-white text-xs mt-1">Gallery</Text>
+              <View className="items-center">
+                <Icon name="sticker-emoji" size={30} color="#FF6347" />
+                <Text className="text-white text-xs mt-1">Happy</Text>
+              </View>
             </TouchableOpacity>
           </View>
         </>
       ) : (
         <View className="absolute top-1/2 -mt-5 self-center bg-black bg-opacity-50 p-2 rounded-md">
-          <Text className="text-white text-lg">Video not available.</Text>
+          <Text className="text-white text-lg">Uh ho. Something went wrong.</Text>
         </View>
       )}
     </SafeAreaView>
