@@ -38,7 +38,7 @@ const countryFlags: Record<string, string> = {
   'Chile': '🇨🇱',
   'Mexico': '🇲🇽',
   'Colombia': '🇨🇴',
-  'Peru': '🇵🇪'
+  'Peru': '🇵🇪',
 };
 
 export type StyleType = 'Academic' | 'Elegant' | 'Gothic' | 'Athletic' | 'Artistic';
@@ -68,17 +68,17 @@ const ProfileCard: React.FC<ProfileCardProps> = React.memo(({ profile, onPress, 
   let style = profile.style as StyleType;
   if (!style && profile.traits && profile.traits.length > 0) {
     const trait = profile.traits[0];
-    if (trait.includes('academic') || trait.includes('smart')) style = 'Academic';
-    else if (trait.includes('elegant') || trait.includes('fashion')) style = 'Elegant';
-    else if (trait.includes('gothic') || trait.includes('dark')) style = 'Gothic';
-    else if (trait.includes('athletic') || trait.includes('sports')) style = 'Athletic';
-    else if (trait.includes('artistic') || trait.includes('creative')) style = 'Artistic';
-    else style = 'Academic';
+    if (trait.includes('academic') || trait.includes('smart')) {style = 'Academic';}
+    else if (trait.includes('elegant') || trait.includes('fashion')) {style = 'Elegant';}
+    else if (trait.includes('gothic') || trait.includes('dark')) {style = 'Gothic';}
+    else if (trait.includes('athletic') || trait.includes('sports')) {style = 'Athletic';}
+    else if (trait.includes('artistic') || trait.includes('creative')) {style = 'Artistic';}
+    else {style = 'Academic';}
   }
-  
+
   const [primaryColor, secondaryColor] = getStyleColors(style);
   const imageUri = typeof profile.backgroundImage === 'string' ? profile.backgroundImage : profile.backgroundImage?.uri;
-  
+
   return (
     <Animated.View
       entering={FadeInDown.delay(index * 50).duration(300)}
@@ -98,7 +98,7 @@ const ProfileCard: React.FC<ProfileCardProps> = React.memo(({ profile, onPress, 
             className="w-full"
             style={{ height: CARD_WIDTH * 1.4, resizeMode: 'cover' }}
           />
-          
+
           {/* Gradient Overlays */}
           <View className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90" />
           <View className="absolute inset-0 bg-black/10" />
@@ -137,7 +137,7 @@ const ProfileCard: React.FC<ProfileCardProps> = React.memo(({ profile, onPress, 
                 </View>
               )}
               {profile.style && (
-                <View 
+                <View
                   className="bg-black/40 rounded-full px-2 py-1"
                   style={{ borderColor: primaryColor, borderWidth: 1 }}
                 >

@@ -1,8 +1,14 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Modal } from 'react-native';
+
+import React, { useCallback, useMemo, useRef, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/types';
+import BottomSheet, { BottomSheetView, BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler'; // Required for BottomSheet
+
+const { width, height } = Dimensions.get('window');
+
 interface DiamondPurchaseModalProps {
   isVisible: boolean;
   onClose: () => void;
@@ -11,10 +17,33 @@ interface DiamondPurchaseModalProps {
 
 const DiamondPurchaseModal: React.FC<DiamondPurchaseModalProps> = ({ isVisible, onClose, onPurchase }) => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  // Snap points for the bottom sheet
+  const snapPoints = useMemo(() => ['25%', '50%', '75%'], []);
+
+  // Effect to open/close the bottom sheet based on isVisible prop
+  useEffect(() => {
+    if (isVisible) {
+      bottomSheetModalRef.current?.present();
+    } else {
+      bottomSheetModalRef.current?.dismiss();
+    }
+  }, [isVisible]);
+
+  // Callback for when the sheet changes state
+  const handleSheetChanges = useCallback((index: number) => {
+    if (index === -1) { // -1 means the sheet is fully closed
+      onClose();
+    }
+  }, [onClose]);
 
   const handleNavigateToPayment = (amount: number, coins: number) => {
-    onClose(); // Close the modal before navigating
-    navigation.navigate('Payment', { amount, coins }); // Assuming 'Payment' screen handles the actual transaction
+    bottomSheetModalRef.current?.dismiss(); // Dismiss the modal before navigating
+    // Introduce a small delay to ensure the modal is fully dismissed before navigating
+    setTimeout(() => {
+      navigation.navigate('Payment', { amount, coins }); // Assuming 'Payment' screen handles the actual transaction
+    }, 300); // 300ms delay, adjust if needed
   };
 
   const diamondPackages = [
@@ -29,52 +58,160 @@ const DiamondPurchaseModal: React.FC<DiamondPurchaseModalProps> = ({ isVisible, 
   ];
 
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={isVisible}
-      onRequestClose={onClose}
-    >
-      <View className="flex-1 justify-center items-center bg-black/70">
-        <View className="m-5 bg-white rounded-2xl p-8 items-center shadow-lg shadow-black/25 elevation-5 w-[85%] max-h-[70%]">
-          <TouchableOpacity className="absolute top-2.5 right-2.5 z-10" onPress={onClose}>
+    // BottomSheetModalProvider should ideally wrap the root of your app.
+    // For this component, we'll wrap it here for demonstration, but consider moving it higher up.
+    <BottomSheetModalProvider>
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        index={1} // Initial snap point (e.g., '50%')
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}
+        backdropComponent={({ style }) => (
+          <View style={[style, styles.backdrop]} />
+        )}
+        handleIndicatorStyle={styles.handleIndicator}
+      >
+        <BottomSheetView style={styles.contentContainer}>
+          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
             <Icon name="close-circle" size={30} color="#999" />
           </TouchableOpacity>
-          <Text className="text-2xl font-bold mb-2.5 text-gray-800">Purchase Diamonds</Text>
-          <Text className="text-base text-gray-600 mb-5 text-center">Recharge to continue talking!</Text>
+          <Text style={styles.modalTitle}>Purchase Diamonds</Text>
+          <Text style={styles.modalSubtitle}>Recharge to continue talking!</Text>
 
-          {diamondPackages.map((pack) => (
-            <TouchableOpacity
-              key={pack.id}
-              className={`
-                flex-row items-center bg-gray-100 rounded-lg p-4 my-2.5 w-full shadow-sm shadow-black/20 elevation-2 relative
-                ${pack.tag === 'Best Value' ? 'bg-yellow-50 border-2 border-yellow-400' : ''}
-                ${pack.tag === 'Hot' ? 'bg-red-50 border-2 border-red-400' : ''}
-              `}
-              onPress={() => handleNavigateToPayment(pack.amount, pack.coins)}
-            >
-              <Icon name="diamond-stone" size={30} color={pack.tag === 'Best Value' ? '#FFD700' : '#00BFFF'} />
-              <View className="ml-4">
-                <Text className="text-lg font-bold text-gray-800">{pack.label}</Text>
-                <Text className="text-base text-gray-700 mt-1.5">{pack.price}</Text>
-              </View>
-              {pack.tag && (
-                <View className={`
-                  absolute -top-2.5 -right-2.5 px-2 py-1 rounded-xl z-20
-                  ${pack.tag === 'Best Value' ? 'bg-yellow-500' : ''}
-                  ${pack.tag === 'Hot' ? 'bg-red-500' : ''}
-                `}>
-                  <Text className="text-white text-xs font-bold">{pack.tag}</Text>
+          <View style={styles.packagesContainer}>
+            {diamondPackages.map((pack) => (
+              <TouchableOpacity
+                key={pack.id}
+                style={[
+                  styles.packageCard,
+                  pack.tag === 'Best Value' && styles.premiumPackage,
+                  pack.tag === 'Hot' && styles.hotPackage,
+                ]}
+                onPress={() => handleNavigateToPayment(pack.amount, pack.coins)}
+              >
+                <Icon name="diamond-stone" size={30} color={pack.tag === 'Best Value' ? '#FFD700' : '#00BFFF'} />
+                <View style={styles.packageDetails}>
+                  <Text style={styles.packageCoins}>{pack.label}</Text>
+                  <Text style={styles.packagePrice}>{pack.price}</Text>
                 </View>
-              )}
-            </TouchableOpacity>
-          ))}
+                {pack.tag && (
+                  <View style={[styles.tagContainer, pack.tag === 'Best Value' ? styles.bestValueTag : styles.hotTag]}>
+                    <Text style={styles.tagText}>{pack.tag}</Text>
+                  </View>
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
 
-          <Text className="text-xs text-gray-600 mt-5 text-center">Your conversation will resume after successful recharge.</Text>
-        </View>
-      </View>
-    </Modal>
+          <Text style={styles.noteText}>Your conversation will resume after successful recharge.</Text>
+        </BottomSheetView>
+      </BottomSheetModal>
+    </BottomSheetModalProvider>
   );
 };
+
+const styles = StyleSheet.create({
+  backdrop: {
+    backgroundColor: 'rgba(0,0,0,0.7)',
+  },
+  handleIndicator: {
+    backgroundColor: '#ccc',
+  },
+  contentContainer: {
+    flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: 20, // Increased padding for better aesthetics
+  },
+  modalTitle: {
+    fontSize: 26, // Slightly larger title
+    fontWeight: 'bold',
+    marginBottom: 8, // Reduced margin
+    color: '#333',
+  },
+  modalSubtitle: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 25, // Increased margin
+    textAlign: 'center',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 1,
+  },
+  premiumPackage: {
+    backgroundColor: '#FFFACD', // Light gold for premium
+    borderWidth: 2,
+    borderColor: '#FFD700', // Gold border
+  },
+  hotPackage: {
+    backgroundColor: '#FFEBEE', // Light red for hot
+    borderWidth: 2,
+    borderColor: '#FF6347', // Orange-red border
+  },
+  packageDetails: {
+    marginLeft: 15,
+  },
+  packageCoins: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  packagePrice: {
+    fontSize: 16,
+    color: '#555',
+    marginTop: 5,
+  },
+  tagContainer: {
+    position: 'absolute',
+    top: -10,
+    right: -10,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
+    zIndex: 2,
+  },
+  bestValueTag: {
+    backgroundColor: '#FFD700', // Gold
+  },
+  hotTag: {
+    backgroundColor: '#FF6347', // Orange-red
+  },
+  tagText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  packagesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: 10,
+    marginBottom: 20,
+  },
+  packageCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
+    padding: 15,
+    marginVertical: 8,
+    width: '48%', // Approximately half width for two items per row
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 2,
+    position: 'relative', // For positioning the tag
+  },
+  noteText: {
+    fontSize: 12,
+    color: '#888',
+    marginTop: 20,
+    textAlign: 'center',
+  },
+});
 
 export default DiamondPurchaseModal;

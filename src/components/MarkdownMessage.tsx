@@ -16,7 +16,7 @@ const containsHindi = (text: string): boolean => {
 const MarkdownMessage: React.FC<MarkdownMessageProps> = ({ text, isUser }) => {
   // Check if the message contains Hindi
   const hasHindi = containsHindi(text);
-  
+
   // Use custom rendering for Hindi content
   if (hasHindi) {
     return (
@@ -30,7 +30,7 @@ const MarkdownMessage: React.FC<MarkdownMessageProps> = ({ text, isUser }) => {
           fontFamily: Platform.select({
             ios: 'System',
             android: 'Roboto',
-            default: 'System'
+            default: 'System',
           }),
         }}>
           {text}
@@ -38,7 +38,7 @@ const MarkdownMessage: React.FC<MarkdownMessageProps> = ({ text, isUser }) => {
       </View>
     );
   }
-  
+
   // For non-Hindi, use Markdown
   const markdownStyles = {
     body: {
@@ -112,4 +112,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MarkdownMessage; 
+export default MarkdownMessage;

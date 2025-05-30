@@ -12,7 +12,7 @@ const ProfileSkeletonLoader: React.FC = () => {
     <View style={{ paddingHorizontal: 16, paddingTop: 16 }}>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }}>
         {skeletonCards.map((_, index) => (
-          <View 
+          <View
             key={index}
             style={{
               width: CARD_WIDTH,
@@ -20,16 +20,16 @@ const ProfileSkeletonLoader: React.FC = () => {
               borderRadius: 16,
               borderWidth: 1,
               borderColor: 'rgba(255, 255, 255, 0.1)',
-              overflow: 'hidden'
+              overflow: 'hidden',
             }}
           >
-            <SkeletonPlaceholder 
+            <SkeletonPlaceholder
               backgroundColor="#2A2A2A"
               highlightColor="#3D3D3D"
               speed={1200}
             >
-              <SkeletonPlaceholder.Item 
-                width={CARD_WIDTH} 
+              <SkeletonPlaceholder.Item
+                width={CARD_WIDTH}
                 height={CARD_WIDTH * 1.4}
                 borderRadius={16}
               >
@@ -40,8 +40,8 @@ const ProfileSkeletonLoader: React.FC = () => {
                   right={12}
                 >
                   {/* Name and Age */}
-                  <SkeletonPlaceholder.Item 
-                    flexDirection="row" 
+                  <SkeletonPlaceholder.Item
+                    flexDirection="row"
                     justifyContent="space-between"
                     alignItems="center"
                     marginBottom={8}
@@ -51,8 +51,8 @@ const ProfileSkeletonLoader: React.FC = () => {
                   </SkeletonPlaceholder.Item>
 
                   {/* Tags */}
-                  <SkeletonPlaceholder.Item 
-                    flexDirection="row" 
+                  <SkeletonPlaceholder.Item
+                    flexDirection="row"
                     alignItems="center"
                     gap={8}
                   >

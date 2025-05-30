@@ -36,11 +36,11 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
   const [activeTab, setActiveTab] = useState<'about' | 'gallery' | 'chat'>('about');
   const [isLiked, setIsLiked] = useState(false);
   const insets = useSafeAreaInsets();
-  
+
   // Initialize interstitial ad
   const { isLoaded, load, show, error } = useInterstitialAd();
   const addCoins = useCoinStore(state => state.addCoins);
-  
+
   useEffect(() => {
     // If we have a characterId but no profile, fetch the character
     if (characterId && !initialProfile) {
@@ -51,7 +51,7 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
     if (profile) {
       checkFavoriteStatus();
     }
-    
+
     // Load interstitial ad
     if (Platform.OS === 'android') {
       load().catch(err => {
@@ -68,7 +68,7 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
     } catch (error) {
       console.error('Failed to fetch character:', error);
       // Keep error toast for critical failures
-      toast.error("Load Failed");
+      toast.error('Load Failed');
       // Go back if we can't load the character
       navigation.goBack();
     } finally {
@@ -77,8 +77,8 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
   };
 
   const checkFavoriteStatus = async () => {
-    if (!profile) return;
-    
+    if (!profile) {return;}
+
     try {
       const favoritesJSON = await AsyncStorage.getItem('favorite_characters');
       if (favoritesJSON) {
@@ -93,8 +93,8 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
   };
 
   const handleStartChat = async () => {
-    if (!profile) return;
-    
+    if (!profile) {return;}
+
     // If ad is loaded, show it before navigating
     if (Platform.OS === 'android' && isLoaded) {
       try {
@@ -106,25 +106,25 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
         console.log('Error showing interstitial ad:', err);
       }
     }
-    
+
     // Navigate to Chat screen
-    navigation.navigate('Chat', { 
+    navigation.navigate('Chat', {
       profile,
-      characterId: profile.id
+      characterId: profile.id,
     });
   };
 
   const handleLike = async () => {
-    if (!profile) return;
+    if (!profile) {return;}
 
     const newStatus = !isLiked;
     setIsLiked(newStatus);
-    
+
     try {
       // Get current favorites
       const favoritesJSON = await AsyncStorage.getItem('favorite_characters');
       let favorites: Profile[] = favoritesJSON ? JSON.parse(favoritesJSON) : [];
-      
+
       if (newStatus) {
         // Add to favorites if not already there
         if (!favorites.some(fav => fav.id === profile.id)) {
@@ -138,7 +138,7 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
         // Remove unnecessary toast - the heart icon change is sufficient visual feedback
         // toast("Removed from Favorites"); // Use basic toast for info
       }
-      
+
       // Save updated favorites
       await AsyncStorage.setItem('favorite_characters', JSON.stringify(favorites));
     } catch (error) {
@@ -146,7 +146,7 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
       // Revert UI state if operation failed
       setIsLiked(!newStatus);
       // Keep this toast for error feedback
-      toast.error("Action Failed");
+      toast.error('Action Failed');
     }
   };
 
@@ -162,7 +162,7 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
 
   const renderFullScreenImage = () => {
     const imageUri = typeof profile.backgroundImage === 'string' ? profile.backgroundImage : profile.backgroundImage?.uri;
-    
+
     return (
     <View className="w-full h-full">
       <Image
@@ -170,13 +170,13 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
         className="absolute w-full h-full"
         style={{ resizeMode: 'cover' }}
       />
-      
+
       {/* Top Gradient - Made darker for better text visibility */}
       <LinearGradient
         colors={['rgba(0,0,0,0.8)', 'transparent']}
         className="absolute top-0 left-0 right-0 h-48"
       />
-      
+
       {/* Bottom Gradient - Stronger gradient for better readability */}
       <LinearGradient
         colors={['transparent', 'rgba(0,0,0,0.98)']}
@@ -202,16 +202,16 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
             </TouchableOpacity>
             <TouchableOpacity
               className={`p-3 rounded-2xl active:opacity-80 border ${
-                isLiked 
-                  ? 'bg-pink-500/20 backdrop-blur-xl border-pink-500/30' 
+                isLiked
+                  ? 'bg-pink-500/20 backdrop-blur-xl border-pink-500/30'
                   : 'bg-white/10 backdrop-blur-xl border-white/20'
               }`}
               onPress={handleLike}
             >
-              <Icon 
-                name={isLiked ? "heart" : "heart-outline"} 
-                size={20} 
-                color={isLiked ? "#EC4899" : "#fff"} 
+              <Icon
+                name={isLiked ? 'heart' : 'heart-outline'}
+                size={20}
+                color={isLiked ? '#EC4899' : '#fff'}
               />
             </TouchableOpacity>
           </View>
@@ -220,7 +220,7 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
 
       {/* Bottom Content */}
       <View className="absolute bottom-0 left-0 right-0">
-        <Animated.View 
+        <Animated.View
           entering={SlideInDown.delay(200)}
           className="px-5 pb-5"
         >
@@ -260,23 +260,23 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
             </TouchableOpacity>
             <TouchableOpacity
               className={`w-14 rounded-2xl items-center justify-center border ${
-                isLiked 
-                  ? 'bg-pink-500 border-pink-500' 
+                isLiked
+                  ? 'bg-pink-500 border-pink-500'
                   : 'bg-white/10 backdrop-blur-xl border-white/20'
               }`}
               onPress={handleLike}
             >
-              <Icon 
-                name={isLiked ? "heart" : "heart-outline"} 
-                size={22} 
-                color="#fff" 
+              <Icon
+                name={isLiked ? 'heart' : 'heart-outline'}
+                size={22}
+                color="#fff"
               />
             </TouchableOpacity>
           </View>
         </Animated.View>
 
         {/* About Section */}
-        <Animated.View 
+        <Animated.View
           entering={SlideInDown.delay(300)}
           className="bg-[#111827]/95 backdrop-blur-xl rounded-t-3xl mt-4 p-6"
           style={{ paddingBottom: insets.bottom + 16 }}
@@ -288,7 +288,7 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
               containerStyle={{ marginBottom: 16 }}
             />
           )}
-          
+
           {/* About Section */}
           <View className="mb-6">
             <View className="flex-row items-center mb-4">
@@ -320,14 +320,14 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
         </Animated.View>
       </View>
     </View>
-  )};
+  );};
 
   return (
     <View className="flex-1 bg-[#111827]">
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       {renderFullScreenImage()}
-      
-      <ScrollView 
+
+      <ScrollView
         className="flex-1 pt-2"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 20 }}
@@ -336,9 +336,9 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
         {activeTab === 'about' && (
           <View className="px-4 mt-4">
             <Text className="text-white/90 text-base mb-4">
-              {profile.description || "No description available for this character."}
+              {profile.description || 'No description available for this character.'}
             </Text>
-            
+
             {/* Additional character info */}
             <View className="mt-4">
               <Text className="text-white text-lg font-semibold mb-2">
@@ -351,7 +351,7 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
                   </View>
                 ))}
               </View>
-              
+
               <Text className="text-white text-lg font-semibold mb-2">
                 Traits
               </Text>

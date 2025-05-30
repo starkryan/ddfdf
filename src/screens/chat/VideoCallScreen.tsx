@@ -91,11 +91,11 @@ const VideoCallScreen: React.FC = () => {
         const granted = await requestPermission();
         if (!granted) {
           Alert.alert(
-            "Camera Permission Required",
-            "Please grant camera permission in your app settings to use your camera.",
+            'Camera Permission Required',
+            'Please grant camera permission in your app settings to use your camera.',
             [
-              { text: "Cancel", style: "cancel" },
-              { text: "Open Settings", onPress: () => { /* Implement open app settings if needed */ } }
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Open Settings', onPress: () => { /* Implement open app settings if needed */ } },
             ]
           );
           return;
@@ -165,25 +165,25 @@ const VideoCallScreen: React.FC = () => {
           <View className="absolute bottom-8 flex-row justify-center w-full bg-black bg-opacity-60 rounded-full py-4 px-4 items-center">
             <TouchableOpacity className="items-center justify-center p-2 mx-2" onPress={toggleMute}>
               <View className="items-center">
-                <Icon name={isMuted ? "microphone-off" : "microphone"} size={30} color="#FFD700" />
+                <Icon name={isMuted ? 'microphone-off' : 'microphone'} size={30} color="#FFD700" />
                 <Text className="text-white text-xs mt-1">{isMuted ? 'Unmute' : 'Mute'}</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity className="items-center justify-center p-2 mx-2" onPress={toggleCamera}>
               <View className="items-center">
-                <Icon name={isCameraOn ? "video" : "video-off"} size={30} color="#00BFFF" />
+                <Icon name={isCameraOn ? 'video' : 'video-off'} size={30} color="#00BFFF" />
                 <Text className="text-white text-xs mt-1">{isCameraOn ? 'Camera Off' : 'Camera On'}</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity className="bg-red-500 rounded-full w-16 h-16 mx-2" onPress={handleEndCall}>
               <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                 <Icon name="phone-hangup" size={30} color="white" />
-               
+
               </View>
             </TouchableOpacity>
             <TouchableOpacity className="items-center justify-center p-2 mx-2" onPress={toggleSpeaker}>
               <View className="items-center">
-                <Icon name={isSpeakerOn ? "volume-high" : "volume-off"} size={30} color="#32CD32" />
+                <Icon name={isSpeakerOn ? 'volume-high' : 'volume-off'} size={30} color="#32CD32" />
                 <Text className="text-white text-xs mt-1">{isSpeakerOn ? 'Speaker Off' : 'Speaker On'}</Text>
               </View>
             </TouchableOpacity>

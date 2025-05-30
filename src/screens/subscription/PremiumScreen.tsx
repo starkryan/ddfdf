@@ -54,23 +54,23 @@ const PremiumScreen: React.FC<PremiumScreenProps> = ({ navigation, route }) => {
     const loadOfferings = async () => {
       try {
         setLoading(true);
-        
+
         // Get the RevenueCat service instance
         const revenueCatService = RevenueCatService.getInstance();
-        
+
         // Make sure RevenueCat is initialized
         await revenueCatService.initialize();
-        
+
         // If user is logged in, identify them with RevenueCat using Firebase auth
         const authUser = await Purchases.getAppUserID();
         if (authUser) {
           // We'll use the RevenueCat user ID that was already assigned
           console.log('Using existing RevenueCat user ID:', authUser);
         }
-        
+
         // Get available packages
         const offerings = await revenueCatService.getOfferings();
-        
+
         if (offerings && offerings.length > 0) {
           setPackages(offerings);
           setSelectedPackage(offerings[0]); // Select the first package by default
@@ -90,20 +90,20 @@ const PremiumScreen: React.FC<PremiumScreenProps> = ({ navigation, route }) => {
 
   // Handle subscription purchase
   const handlePurchase = async () => {
-    if (!selectedPackage || purchasing) return;
+    if (!selectedPackage || purchasing) {return;}
 
     try {
       setPurchasing(true);
-      
+
       // Get the RevenueCat service instance
       const revenueCatService = RevenueCatService.getInstance();
-      
+
       // Purchase the selected package
       const customerInfo = await revenueCatService.purchasePackage(selectedPackage);
-      
+
       if (customerInfo) {
         toast.success('Subscription activated!'); // Replaced Toast.success
-        
+
         // If this was during onboarding, continue to main app
         if (isFromOnboarding) {
           navigation.reset({
@@ -130,23 +130,23 @@ const PremiumScreen: React.FC<PremiumScreenProps> = ({ navigation, route }) => {
 
   // Handle restore purchases
   const handleRestore = async () => {
-    if (restoring) return;
+    if (restoring) {return;}
 
     try {
       setRestoring(true);
-      
+
       // Get the RevenueCat service instance
       const revenueCatService = RevenueCatService.getInstance();
-      
+
       // Restore purchases
       const customerInfo = await revenueCatService.restorePurchases();
-      
+
       // Check if user has premium access
       const hasPremium = await revenueCatService.checkPremiumAccess();
-      
+
       if (hasPremium) {
         toast.success('Subscription restored!'); // Replaced Toast.success
-        
+
         // If this was during onboarding, continue to main app
         if (isFromOnboarding) {
           navigation.reset({

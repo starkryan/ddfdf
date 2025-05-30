@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native'; 
-import Animated, { 
-  useSharedValue, 
-  useAnimatedStyle, 
+import { View, StyleSheet, Dimensions } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
   withTiming,
   withDelay,
   runOnJS,
@@ -27,7 +27,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationFinish }) => {
 
   // Handle animation completion
   const handleAnimationComplete = () => {
-    opacity.value = withTiming(0, { 
+    opacity.value = withTiming(0, {
       duration: 800,
       easing: Easing.bezier(0.4, 0, 0.2, 1),
     }, (finished) => {
@@ -39,7 +39,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationFinish }) => {
 
   useEffect(() => {
     // Initial animations
-    backgroundOpacity.value = withTiming(1, { 
+    backgroundOpacity.value = withTiming(1, {
       duration: 500,
       easing: Easing.bezier(0.4, 0, 0.2, 1),
     });
@@ -92,13 +92,13 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onAnimationFinish }) => {
           style={styles.fullSize}
         />
       </Animated.View>
-      
+
       <View style={styles.contentContainer}>
         <Animated.View style={[styles.logoContainer]}>
           <Svg height={splashSize} width={splashSize} viewBox="0 0 100 100">
             {/* Woman's Silhouette PNG */}
-           
-            
+
+
             {/* Heart SVG */}
             <G style={heartTransformStyle}>
               <Path

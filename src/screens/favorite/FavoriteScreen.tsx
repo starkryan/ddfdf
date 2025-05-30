@@ -37,7 +37,7 @@ export const FavoriteScreen: React.FC<TabScreenProps<'Favorites'>> = ({ navigati
     } catch (error) {
       console.error('Error loading favorites:', error);
       // Keep critical error toast
-      toast.error("Load Failed");
+      toast.error('Load Failed');
     } finally {
       setLoading(false);
     }
@@ -63,7 +63,7 @@ export const FavoriteScreen: React.FC<TabScreenProps<'Favorites'>> = ({ navigati
       // Reload favorites to restore correct state if operation failed
       loadFavorites();
       // Keep error toast for operation failures
-      toast.error("Action Failed");
+      toast.error('Action Failed');
     }
   };
 
@@ -111,7 +111,7 @@ export const FavoriteScreen: React.FC<TabScreenProps<'Favorites'>> = ({ navigati
                 <Icon name="heart" size={20} color="#fff" />
               </TouchableOpacity>
             </View>
-{/* 
+{/*
             <View className="flex-row mt-2">
               <View className="bg-white/10 rounded-full px-3 py-1">
                 <Text className="text-white text-sm">{profile.style || 'Character'}</Text>
@@ -155,7 +155,7 @@ export const FavoriteScreen: React.FC<TabScreenProps<'Favorites'>> = ({ navigati
        <View className="px-4 py-4">
           <View className="flex-row items-center justify-between">
             <Text className="text-2xl font-bold text-white">Favorites</Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={loadFavorites}
               className="bg-white/10 backdrop-blur-xl border border-white/20 p-3 rounded-2xl"
             >
@@ -179,9 +179,9 @@ export const FavoriteScreen: React.FC<TabScreenProps<'Favorites'>> = ({ navigati
               flexGrow: 1,
               paddingHorizontal: 16,
               paddingTop: 12,
-              paddingBottom: Platform.OS === 'ios' ? 
-                100 + Math.min(insets.bottom, 20) : 
-                120 + Math.min(insets.bottom, 15)
+              paddingBottom: Platform.OS === 'ios' ?
+                100 + Math.min(insets.bottom, 20) :
+                120 + Math.min(insets.bottom, 15),
             }}
             showsVerticalScrollIndicator={true}
             indicatorStyle="white"

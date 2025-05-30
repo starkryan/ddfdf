@@ -1,8 +1,8 @@
 import { Platform } from 'react-native';
-import { 
-  TestIds, 
-  RequestOptions, 
-  AdsConsent, 
+import {
+  TestIds,
+  RequestOptions,
+  AdsConsent,
   AdsConsentStatus,
   AppOpenAd,
   InterstitialAd,
@@ -13,7 +13,7 @@ import {
   RewardedAdEventType,
   MobileAds,
   PaidEvent,
-  RevenuePrecisions
+  RevenuePrecisions,
 } from 'react-native-google-mobile-ads';
 
 /**
@@ -37,7 +37,7 @@ export const adUnitIds = {
   rewarded: __DEV__ ? TestIds.REWARDED : 'ca-app-pub-2212478344110330/2981942436',
   rewardedInterstitial: __DEV__ ? TestIds.REWARDED_INTERSTITIAL : 'ca-app-pub-2212478344110330/2284179689',
   native: __DEV__ ? TestIds.NATIVE : 'ca-app-pub-2212478344110330/9544556752',
-  
+
   // Test IDs that always fill on emulators/simulators (only used in __DEV__ mode)
   simulatorBanner: TestIds.BANNER,
   simulatorInterstitial: TestIds.INTERSTITIAL,
@@ -83,7 +83,7 @@ class AdCache<T> {
   add(ad: T): void {
     // Add with current timestamp
     this.ads.push({ad, timestamp: Date.now()});
-    
+
     // Trim if we exceed max size
     if (this.ads.length > this.maxSize) {
       this.ads.shift(); // Remove oldest
@@ -94,8 +94,8 @@ class AdCache<T> {
    * Get an ad from the cache (and remove it)
    */
   get(): T | null {
-    if (this.ads.length === 0) return null;
-    
+    if (this.ads.length === 0) {return null;}
+
     // Get the newest ad (to avoid expiry issues)
     const {ad} = this.ads.pop()!;
     return ad;
@@ -112,8 +112,8 @@ class AdCache<T> {
    * Check if any ads are expired and should be refreshed
    */
   hasExpiredAds(): boolean {
-    if (this.ads.length === 0) return false;
-    
+    if (this.ads.length === 0) {return false;}
+
     const now = Date.now();
     return this.ads.some(({timestamp}) => now - timestamp > AD_CACHE_EXPIRY);
   }
@@ -150,7 +150,7 @@ class AdCache<T> {
    * Get the timestamp of the oldest ad in the cache
    */
   getOldestTimestamp(): number {
-    if (this.ads.length === 0) return 0;
+    if (this.ads.length === 0) {return 0;}
     return this.ads[0].timestamp;
   }
 }
@@ -167,15 +167,15 @@ class AdMobService {
   private appVolume = 1.0;
   private appMuted = false;
   private onAdRevenue: ((event: PaidEvent) => void) | null = null;
-  
+
   // Ad caches for different ad types
   private interstitialCache = new AdCache<InterstitialAd>(MAX_INTERSTITIAL_CACHE);
   private rewardedCache = new AdCache<RewardedAd>(MAX_REWARDED_CACHE);
   private rewardedInterstitialCache = new AdCache<RewardedInterstitialAd>(1);
-  
+
   // Background preloading timers
   private preloadTimer: NodeJS.Timeout | null = null;
-  
+
   private constructor() {
     // Private constructor to enforce singleton pattern
   }
@@ -192,17 +192,17 @@ class AdMobService {
    */
   public async initialize(): Promise<void> {
     try {
-      if (this.adsInitialized) return;
-      
+      if (this.adsInitialized) {return;}
+
       // Initialize MobileAds SDK
       await MobileAds().initialize();
-      
+
       // Initialize or preload ads in parallel
       await this.preloadAdsInParallel();
-      
+
       // Start background preloading
       this.setupBackgroundPreloading();
-      
+
       this.adsInitialized = true;
     } catch (err) {
       if (__DEV__) {
@@ -222,7 +222,7 @@ class AdMobService {
       this.preloadRewardedAd(), // Lower priority
       this.preloadRewardedInterstitialAd(), // New rewarded interstitial
     ];
-    
+
     // Wait for all to complete, but don't let errors stop others
     try {
       await Promise.allSettled(preloadPromises);
@@ -241,7 +241,7 @@ class AdMobService {
     if (this.preloadTimer) {
       clearInterval(this.preloadTimer);
     }
-    
+
     // Check every 5 minutes if we need to preload more ads
     this.preloadTimer = setInterval(() => {
       this.checkAndRefreshAdCache();
@@ -253,12 +253,12 @@ class AdMobService {
    */
   private async checkAndRefreshAdCache(): Promise<void> {
     const tasks = [];
-    
+
     // Check if app open ad is stale or missing
     if (!this.isAppOpenAdAvailable() && !this.isAppOpenAdLoading) {
       tasks.push(this.loadAppOpenAd());
     }
-    
+
     // Top up interstitial cache if needed
     if (this.interstitialCache.size() < MAX_INTERSTITIAL_CACHE && !this.interstitialCache.isLoading()) {
       tasks.push(this.preloadInterstitialAd());
@@ -269,7 +269,7 @@ class AdMobService {
       this.interstitialCache.clear();
       tasks.push(this.preloadInterstitialAd());
     }
-    
+
     // Top up rewarded ad cache if needed
     if (this.rewardedCache.size() < MAX_REWARDED_CACHE && !this.rewardedCache.isLoading()) {
       tasks.push(this.preloadRewardedAd());
@@ -280,7 +280,7 @@ class AdMobService {
       this.rewardedCache.clear();
       tasks.push(this.preloadRewardedAd());
     }
-    
+
     // Top up rewarded interstitial ad cache if needed
     if (this.rewardedInterstitialCache.size() < 1 && !this.rewardedInterstitialCache.isLoading()) {
       tasks.push(this.preloadRewardedInterstitialAd());
@@ -291,7 +291,7 @@ class AdMobService {
       this.rewardedInterstitialCache.clear();
       tasks.push(this.preloadRewardedInterstitialAd());
     }
-    
+
     // Run refresh tasks in parallel
     if (tasks.length > 0) {
       await Promise.allSettled(tasks);
@@ -303,8 +303,8 @@ class AdMobService {
    * @returns Promise resolving to consent status
    */
   public async initializeConsent(): Promise<AdsConsentStatus> {
-    if (Platform.OS !== 'android' && Platform.OS !== 'ios') return AdsConsentStatus.NOT_REQUIRED;
-    
+    if (Platform.OS !== 'android' && Platform.OS !== 'ios') {return AdsConsentStatus.NOT_REQUIRED;}
+
     try {
       // Use a more robust error handling approach
       const consentInfo = await AdsConsent.requestInfoUpdate({
@@ -313,7 +313,7 @@ class AdMobService {
       }).catch(error => {
         return { status: AdsConsentStatus.NOT_REQUIRED, isConsentFormAvailable: false };
       });
-      
+
       if (consentInfo.isConsentFormAvailable && consentInfo.status === AdsConsentStatus.REQUIRED) {
         try {
           const formResult = await AdsConsent.showForm();
@@ -324,7 +324,7 @@ class AdMobService {
           return AdsConsentStatus.NOT_REQUIRED;
         }
       }
-      
+
       this.consentStatus = consentInfo.status;
       return consentInfo.status;
     } catch (error) {
@@ -346,50 +346,50 @@ class AdMobService {
    * @param onAdDismissed Callback when ad is dismissed
    */
   public async loadAppOpenAd(onAdDismissed?: () => void): Promise<void> {
-    if (Platform.OS !== 'android') return;
-    
+    if (Platform.OS !== 'android') {return;}
+
     // If we've exceeded retry attempts, don't try to load another one
     if (this.appOpenAdErrorCount >= this.maxRetryAttempts) {
       // Reset error count after some time to allow retries later
       setTimeout(() => this.appOpenAdErrorCount = 0, 30 * 60 * 1000); // Reset after 30 minutes
       return;
     }
-    
+
     // If an ad is already loading, don't start another load
     if (this.isAppOpenAdLoading) {
       return;
     }
-    
+
     // If an ad is already available and not expired, don't load another one
     if (this.isAppOpenAdAvailable()) {
       return;
     }
-    
+
     this.isAppOpenAdLoading = true;
-    
+
     try {
       // Clean up any existing ad
       if (this.appOpenAd) {
         this.appOpenAd.removeAllListeners();
         this.appOpenAd = null;
       }
-      
+
       // Use adUnitIds.appOpen instead of always using test IDs
       const adUnitId = adUnitIds.appOpen;
-      
+
       this.appOpenAd = AppOpenAd.createForAdRequest(adUnitId, {
         ...defaultRequestOptions,
         requestNonPersonalizedAdsOnly: this.consentStatus !== AdsConsentStatus.OBTAINED,
       });
-      
+
       const loadedListener = this.appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
         this.isAppOpenAdLoading = false;
         this.appOpenAdLoadTime = Date.now();
         this.appOpenAdErrorCount = 0; // Reset error count on successful load
       });
-      
+
       const closedListener = this.appOpenAd.addAdEventListener(AdEventType.CLOSED, () => {
-        if (onAdDismissed) onAdDismissed();
+        if (onAdDismissed) {onAdDismissed();}
         // Clean up listeners
         loadedListener();
         closedListener();
@@ -403,29 +403,29 @@ class AdMobService {
       const errorListener = this.appOpenAd.addAdEventListener(AdEventType.ERROR, (error) => {
         this.isAppOpenAdLoading = false;
         this.appOpenAdErrorCount++;
-        
+
         // Clean up listeners
         loadedListener();
         errorListener();
         closedListener();
-        
+
         // If it's a no-fill error, we might want to try again after a delay
         if (error.message && error.message.includes('no-fill') && this.appOpenAdErrorCount < this.maxRetryAttempts) {
           // Exponential backoff for retries (2^n * 1000ms)
           const retryDelay = Math.pow(2, this.appOpenAdErrorCount) * 1000;
-          
+
           setTimeout(() => {
             this.loadAppOpenAd(onAdDismissed);
           }, retryDelay);
         }
       });
-      
+
       // Add revenue event listener
       const paidListener = this.appOpenAd.addAdEventListener(AdEventType.PAID, (event) => {
-        if (event) this.handleAdRevenue(event);
+        if (event) {this.handleAdRevenue(event);}
         paidListener(); // Remove listener after first event
       });
-      
+
       // Start the load
       await this.appOpenAd.load();
     } catch (error) {
@@ -444,16 +444,16 @@ class AdMobService {
       this.loadAppOpenAd();
       return false;
     }
-    
+
     try {
       if (!this.appOpenAd) {
         return false;
       }
-      
+
       if (!this.appOpenAd.loaded) {
         return false;
       }
-      
+
       await this.appOpenAd.show();
       return true;
     } catch (error) {
@@ -474,27 +474,27 @@ class AdMobService {
   public async getInterstitialAd(): Promise<InterstitialAd> {
     // Always force fresh ad after certain conditions
     const now = Date.now();
-    const forceRefresh = 
+    const forceRefresh =
       // Force refresh after 5 minutes of caching to ensure variety
       (this.interstitialCache.hasAds() && now - this.interstitialCache.getOldestTimestamp() > 5 * 60 * 1000) ||
       // Every third request, force a fresh ad (33% refresh rate)
       (Math.random() < 0.33);
-      
+
     if (forceRefresh && this.interstitialCache.hasAds()) {
       // @ts-ignore - Accessing private member for cleanup
       this.interstitialCache.ads.forEach(({ ad }) => ad.removeAllListeners());
       this.interstitialCache.clear();
     }
-    
+
     // First try to get from cache
     const cachedAd = this.interstitialCache.get();
     if (cachedAd) {
       // Start preloading a replacement in the background
       setTimeout(() => this.preloadInterstitialAd(), 0);
-      
+
       return cachedAd;
     }
-    
+
     // If not in cache, load a new one
     return new Promise((resolve, reject) => {
       // Add a random component to help with ad rotation
@@ -505,30 +505,30 @@ class AdMobService {
         keywords: [
           ...defaultRequestOptions.keywords || [],
           // Add a random value to encourage ad rotation
-          `refresh_${Math.floor(Math.random() * 1000000)}`
-        ]
+          `refresh_${Math.floor(Math.random() * 1000000)}`,
+        ],
       };
-      
+
       const interstitial = InterstitialAd.createForAdRequest(
         adUnitIds.interstitial,
         requestOptions
       );
-      
+
       const loadedListener = interstitial.addAdEventListener(AdEventType.LOADED, () => {
         loadedListener();
         resolve(interstitial);
       });
-      
+
       const errorListener = interstitial.addAdEventListener(AdEventType.ERROR, (error) => {
         errorListener();
         reject(error);
       });
-      
+
       // Add revenue event listener (this stays attached)
       interstitial.addAdEventListener(AdEventType.PAID, (event) => {
-        if (event) this.handleAdRevenue(event);
+        if (event) {this.handleAdRevenue(event);}
       });
-      
+
       interstitial.load();
     });
   }
@@ -537,10 +537,10 @@ class AdMobService {
    * Preload an interstitial ad into the cache
    */
   private async preloadInterstitialAd(): Promise<void> {
-    if (!this.adsInitialized || this.interstitialCache.isLoading()) return;
-    
+    if (!this.adsInitialized || this.interstitialCache.isLoading()) {return;}
+
     this.interstitialCache.setLoading(true);
-    
+
     try {
       // Add a random component to help with ad rotation
       const requestOptions = {
@@ -550,15 +550,15 @@ class AdMobService {
         keywords: [
           ...defaultRequestOptions.keywords || [],
           // Add a timestamp and random value to encourage ad rotation
-          `refresh_${Date.now()}_${Math.floor(Math.random() * 1000000)}`
-        ]
+          `refresh_${Date.now()}_${Math.floor(Math.random() * 1000000)}`,
+        ],
       };
-      
+
       const interstitial = InterstitialAd.createForAdRequest(
         adUnitIds.interstitial,
         requestOptions
       );
-      
+
       const loadPromise = new Promise<void>((resolve, reject) => {
         const loadedListener = interstitial.addAdEventListener(AdEventType.LOADED, () => {
           loadedListener();
@@ -567,25 +567,25 @@ class AdMobService {
           this.interstitialCache.setLoading(false);
           resolve();
         });
-        
+
         const errorListener = interstitial.addAdEventListener(AdEventType.ERROR, (error) => {
           loadedListener();
           errorListener();
           this.interstitialCache.setLoading(false);
           reject(error);
         });
-        
+
         // Add revenue event listener (this stays attached)
         interstitial.addAdEventListener(AdEventType.PAID, (event) => {
-          if (event) this.handleAdRevenue(event);
+          if (event) {this.handleAdRevenue(event);}
         });
       });
-      
+
       // Start loading
       interstitial.load();
       await loadPromise;
-      
-      // If we've successfully loaded one ad and cache isn't full, 
+
+      // If we've successfully loaded one ad and cache isn't full,
       // opportunistically load another in the background
       if (this.interstitialCache.size() < MAX_INTERSTITIAL_CACHE) {
         setTimeout(() => this.preloadInterstitialAd(), 1000);
@@ -601,24 +601,24 @@ class AdMobService {
   public async showInterstitialAd(): Promise<boolean> {
     try {
       const interstitial = await this.getInterstitialAd();
-      
+
       // Set up closed listener to preload the next ad
       const closedListener = interstitial.addAdEventListener(AdEventType.CLOSED, () => {
         closedListener();
-        
+
         // Queue up next preload after ad is closed
         setTimeout(() => {
           this.preloadInterstitialAd();
         }, 1000);
       });
-      
+
       // Show the ad
       await interstitial.show();
       return true;
     } catch (error) {
       // Try to preload for next time
       setTimeout(() => this.preloadInterstitialAd(), 5000);
-      
+
       return false;
     }
   }
@@ -629,27 +629,27 @@ class AdMobService {
   public async getRewardedAd(): Promise<RewardedAd> {
     // Always force fresh ad after certain conditions
     const now = Date.now();
-    const forceRefresh = 
+    const forceRefresh =
       // Force refresh after 5 minutes of caching to ensure variety
       (this.rewardedCache.hasAds() && now - this.rewardedCache.getOldestTimestamp() > 5 * 60 * 1000) ||
       // Every third request, force a fresh ad (33% refresh rate)
       (Math.random() < 0.33);
-      
+
     if (forceRefresh && this.rewardedCache.hasAds()) {
       // @ts-ignore - Accessing private member for cleanup
       this.rewardedCache.ads.forEach(({ ad }) => ad.removeAllListeners());
       this.rewardedCache.clear();
     }
-      
+
     // First try to get from cache if not forcing refresh
     const cachedAd = this.rewardedCache.get();
     if (cachedAd) {
       // Start preloading a replacement in the background
       setTimeout(() => this.preloadRewardedAd(), 0);
-      
+
       return cachedAd;
     }
-    
+
     // If not in cache, load a new one
     return new Promise((resolve, reject) => {
       // Add a random query parameter to help with ad rotation
@@ -660,30 +660,30 @@ class AdMobService {
         keywords: [
           ...defaultRequestOptions.keywords || [],
           // Add a random value to encourage ad rotation
-          `refresh_${Math.floor(Math.random() * 1000000)}`
-        ]
+          `refresh_${Math.floor(Math.random() * 1000000)}`,
+        ],
       };
-      
+
       const rewarded = RewardedAd.createForAdRequest(
         adUnitIds.rewarded,
         requestOptions
       );
-      
+
       const loadedListener = rewarded.addAdEventListener(RewardedAdEventType.LOADED, () => {
         loadedListener();
         resolve(rewarded);
       });
-      
+
       const errorListener = rewarded.addAdEventListener(AdEventType.ERROR, (error) => {
         errorListener();
         reject(error);
       });
-      
+
       // Add revenue event listener (this stays attached)
       rewarded.addAdEventListener(AdEventType.PAID, (event) => {
-        if (event) this.handleAdRevenue(event);
+        if (event) {this.handleAdRevenue(event);}
       });
-      
+
       rewarded.load();
     });
   }
@@ -692,10 +692,10 @@ class AdMobService {
    * Preload a rewarded ad into the cache
    */
   private async preloadRewardedAd(): Promise<void> {
-    if (!this.adsInitialized || this.rewardedCache.isLoading()) return;
-    
+    if (!this.adsInitialized || this.rewardedCache.isLoading()) {return;}
+
     this.rewardedCache.setLoading(true);
-    
+
     try {
       // Add a random component to help with ad rotation
       const requestOptions = {
@@ -705,15 +705,15 @@ class AdMobService {
         keywords: [
           ...defaultRequestOptions.keywords || [],
           // Add a timestamp and random value to encourage ad rotation
-          `refresh_${Date.now()}_${Math.floor(Math.random() * 1000000)}`
-        ]
+          `refresh_${Date.now()}_${Math.floor(Math.random() * 1000000)}`,
+        ],
       };
-      
+
       const rewarded = RewardedAd.createForAdRequest(
         adUnitIds.rewarded,
         requestOptions
       );
-      
+
       const loadPromise = new Promise<void>((resolve, reject) => {
         const loadedListener = rewarded.addAdEventListener(RewardedAdEventType.LOADED, () => {
           loadedListener();
@@ -722,25 +722,25 @@ class AdMobService {
           this.rewardedCache.setLoading(false);
           resolve();
         });
-        
+
         const errorListener = rewarded.addAdEventListener(AdEventType.ERROR, (error) => {
           loadedListener();
           errorListener();
           this.rewardedCache.setLoading(false);
           reject(error);
         });
-        
+
         // Add revenue event listener (this stays attached)
         rewarded.addAdEventListener(AdEventType.PAID, (event) => {
-          if (event) this.handleAdRevenue(event);
+          if (event) {this.handleAdRevenue(event);}
         });
       });
-      
+
       // Start loading
       rewarded.load();
       await loadPromise;
-      
-      // If we've successfully loaded one ad and cache isn't full, 
+
+      // If we've successfully loaded one ad and cache isn't full,
       // opportunistically load another in the background
       if (this.rewardedCache.size() < MAX_REWARDED_CACHE) {
         setTimeout(() => this.preloadRewardedAd(), 1000);
@@ -756,7 +756,7 @@ class AdMobService {
   public async showRewardedAd(): Promise<any> {
     try {
       const rewarded = await this.getRewardedAd();
-      
+
       // Add a marker to know when this ad was last shown
       this.markRewardedAdShown();
 
@@ -789,7 +789,7 @@ class AdMobService {
         // Set up closed listener to preload the next ad
         const closedListener = rewarded.addAdEventListener(AdEventType.CLOSED, () => {
           adClosed = true;
-          
+
           // Only resolve after the ad closes
           if (earned && rewardItem) {
             cleanupListeners();
@@ -798,7 +798,7 @@ class AdMobService {
             cleanupListeners();
             resolve(null); // No reward earned
           }
-          
+
           // Queue up next preload after ad is closed
           setTimeout(() => {
             this.preloadRewardedAd();
@@ -841,10 +841,10 @@ class AdMobService {
     if (cachedAd) {
       // Start preloading a replacement in the background
       setTimeout(() => this.preloadRewardedInterstitialAd(), 0);
-      
+
       return cachedAd;
     }
-    
+
     // If not in cache, load a new one
     return new Promise((resolve, reject) => {
       const rewardedInterstitial = RewardedInterstitialAd.createForAdRequest(
@@ -854,22 +854,22 @@ class AdMobService {
           requestNonPersonalizedAdsOnly: this.consentStatus === AdsConsentStatus.OBTAINED,
         }
       );
-      
+
       const loadedListener = rewardedInterstitial.addAdEventListener(RewardedAdEventType.LOADED, () => {
         loadedListener();
         resolve(rewardedInterstitial);
       });
-      
+
       const errorListener = rewardedInterstitial.addAdEventListener(AdEventType.ERROR, (error) => {
         errorListener();
         reject(error);
       });
-      
+
       // Add revenue event listener (this stays attached)
       rewardedInterstitial.addAdEventListener(AdEventType.PAID, (event) => {
-        if (event) this.handleAdRevenue(event);
+        if (event) {this.handleAdRevenue(event);}
       });
-      
+
       rewardedInterstitial.load();
     });
   }
@@ -878,10 +878,10 @@ class AdMobService {
    * Preload a rewarded interstitial ad into the cache
    */
   private async preloadRewardedInterstitialAd(): Promise<void> {
-    if (!this.adsInitialized || this.rewardedInterstitialCache.isLoading()) return;
-    
+    if (!this.adsInitialized || this.rewardedInterstitialCache.isLoading()) {return;}
+
     this.rewardedInterstitialCache.setLoading(true);
-    
+
     try {
       const rewardedInterstitial = RewardedInterstitialAd.createForAdRequest(
         adUnitIds.rewardedInterstitial,
@@ -890,7 +890,7 @@ class AdMobService {
           requestNonPersonalizedAdsOnly: this.consentStatus === AdsConsentStatus.OBTAINED,
         }
       );
-      
+
       const loadPromise = new Promise<void>((resolve, reject) => {
         const loadedListener = rewardedInterstitial.addAdEventListener(RewardedAdEventType.LOADED, () => {
           loadedListener();
@@ -899,20 +899,20 @@ class AdMobService {
           this.rewardedInterstitialCache.setLoading(false);
           resolve();
         });
-        
+
         const errorListener = rewardedInterstitial.addAdEventListener(AdEventType.ERROR, (error) => {
           loadedListener();
           errorListener();
           this.rewardedInterstitialCache.setLoading(false);
           reject(error);
         });
-        
+
         // Add revenue event listener (this stays attached)
         rewardedInterstitial.addAdEventListener(AdEventType.PAID, (event) => {
-          if (event) this.handleAdRevenue(event);
+          if (event) {this.handleAdRevenue(event);}
         });
       });
-      
+
       // Start loading
       rewardedInterstitial.load();
       await loadPromise;
@@ -927,27 +927,27 @@ class AdMobService {
   public async showRewardedInterstitialAd(): Promise<any> {
     try {
       const rewardedInterstitial = await this.getRewardedInterstitialAd();
-      
+
       return new Promise((resolve, reject) => {
         // Set up reward listener
         const earnedRewardListener = rewardedInterstitial.addAdEventListener(
-          RewardedAdEventType.EARNED_REWARD, 
+          RewardedAdEventType.EARNED_REWARD,
           (reward) => {
             earnedRewardListener();
             resolve(reward);
           }
         );
-        
+
         // Set up closed listener to preload the next ad
         const closedListener = rewardedInterstitial.addAdEventListener(AdEventType.CLOSED, () => {
           closedListener();
           // If we reach here without earning a reward, resolve with null
           resolve(null);
-          
+
           // Queue up next preload after ad is closed
           setTimeout(() => this.preloadRewardedInterstitialAd(), 1000);
         });
-        
+
         // Set up error listener
         const errorListener = rewardedInterstitial.addAdEventListener(AdEventType.ERROR, (error) => {
           errorListener();
@@ -955,7 +955,7 @@ class AdMobService {
           earnedRewardListener();
           reject(error);
         });
-        
+
         // Show the ad
         rewardedInterstitial.show().catch((error) => {
           errorListener();
@@ -967,7 +967,7 @@ class AdMobService {
     } catch (error) {
       // Try to preload for next time
       setTimeout(() => this.preloadRewardedInterstitialAd(), 5000);
-      
+
       throw error;
     }
   }
@@ -980,7 +980,7 @@ class AdMobService {
       if (!this.adsInitialized) {
         await this.initialize();
       }
-      
+
       if (__DEV__) {
         // @ts-ignore - Method exists in latest version but might not be typed
         await MobileAds().openDebugMenu(adUnitId);
@@ -998,7 +998,7 @@ class AdMobService {
       if (!this.adsInitialized) {
         await this.initialize();
       }
-      
+
       await MobileAds().openAdInspector();
     } catch (error) {
       throw error;
@@ -1012,7 +1012,7 @@ class AdMobService {
   public setAppVolume(volume: number): void {
     // Clamp volume between 0 and 1
     const clampedVolume = Math.max(0, Math.min(1, volume));
-    
+
     if (this.appVolume !== clampedVolume) {
       this.appVolume = clampedVolume;
       MobileAds().setAppVolume(clampedVolume);
@@ -1064,7 +1064,7 @@ class AdMobService {
       this.onAdRevenue(event);
     }
   }
-  
+
   /**
    * Clean up resources when the app is being closed
    */
@@ -1073,13 +1073,13 @@ class AdMobService {
       clearInterval(this.preloadTimer);
       this.preloadTimer = null;
     }
-    
+
     // Clean up app open ad
     if (this.appOpenAd) {
       this.appOpenAd.removeAllListeners();
       this.appOpenAd = null;
     }
-    
+
     // Clear all ad caches
     this.interstitialCache.clear();
     this.rewardedCache.clear();
@@ -1095,19 +1095,19 @@ class AdMobService {
       await this.loadAppOpenAd();
       await new Promise(resolve => setTimeout(resolve, 2000));
       const appOpenShown = await this.showAppOpenAd();
-      
+
       // Wait a bit between tests
       await new Promise(resolve => setTimeout(resolve, 5000));
-      
+
       try {
         const reward = await this.showRewardedAd();
       } catch (error) {
         // Silently handle error
       }
-      
+
       // Wait a bit between tests
       await new Promise(resolve => setTimeout(resolve, 5000));
-      
+
       try {
         const interstitialShown = await this.showInterstitialAd();
       } catch (error) {
@@ -1125,17 +1125,17 @@ class AdMobService {
    */
   public async registerAsTestDevice(deviceId?: string): Promise<void> {
     try {
-      const testIds = deviceId 
-        ? [deviceId, 'EMULATOR'] 
+      const testIds = deviceId
+        ? [deviceId, 'EMULATOR']
         : ['EMULATOR'];
-        
+
       // Add common emulator IDs
       if (Platform.OS === 'android') {
         testIds.push('emulator');
       } else if (Platform.OS === 'ios') {
         testIds.push('Simulator');
       }
-      
+
       await MobileAds().setRequestConfiguration({
         testDeviceIdentifiers: testIds,
       });
@@ -1146,7 +1146,7 @@ class AdMobService {
 
   // Last time the rewarded ad was shown
   private lastRewardedAdShownTime = 0;
-  
+
   /**
    * Mark when a rewarded ad was shown to manage frequency
    */

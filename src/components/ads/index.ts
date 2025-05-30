@@ -3,7 +3,7 @@ import NativeAdComponent from './NativeAdComponent';
 
 export {
   BannerAdComponent,
-  NativeAdComponent
+  NativeAdComponent,
 };
 
-export * from '../../hooks/useAdMob'; 
+export * from '../../hooks/useAdMob';

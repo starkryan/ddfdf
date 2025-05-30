@@ -33,7 +33,7 @@ class RevenueCatService {
    * Initialize RevenueCat SDK
    */
   public async initialize(): Promise<void> {
-    if (this.initialized) return;
+    if (this.initialized) {return;}
 
     try {
       const apiKey = Platform.OS === 'ios' ? API_KEYS.ios : API_KEYS.android;
@@ -139,4 +139,4 @@ class RevenueCatService {
   }
 }
 
-export default RevenueCatService; 
+export default RevenueCatService;

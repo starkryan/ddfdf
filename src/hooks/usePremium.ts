@@ -62,6 +62,6 @@ export const usePremium = (): PremiumStatus => {
     isPremium,
     customerInfo,
     loading,
-    checkPremiumStatus
+    checkPremiumStatus,
   };
-}; 
+};

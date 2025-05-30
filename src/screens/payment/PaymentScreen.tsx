@@ -1,5 +1,5 @@
-import { Alert, Button, NativeEventEmitter, PermissionsAndroid, StyleSheet, Text, View, NativeModules, ActivityIndicator } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { Alert, Button, NativeEventEmitter, PermissionsAndroid, StyleSheet, Text, View, NativeModules, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import PayUBizSdk from 'payu-non-seam-less-react';
 import { sha512 } from 'js-sha512';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
@@ -12,8 +12,8 @@ const PaymentScreen = () => {
     const navigation = useNavigation();
     const { amount: initialAmount, coins: purchasedCoins } = route.params;
 
-    const [key,setKey]=useState("3LySeo");
-    const [merchantSalt, setMerchantSalt] = useState("qzDFCG4c3ocV6m8Z0GbazBsvfqvIXlZO");
+    const [key,setKey] = useState('3LySeo');
+    const [merchantSalt, setMerchantSalt] = useState('qzDFCG4c3ocV6m8Z0GbazBsvfqvIXlZO');
 
     const [amount, setAmount] = useState(initialAmount.toString()); // Use initialAmount from params
     const [productInfo, setProductInfo] = useState('Diamond Purchase'); // Changed product info
@@ -28,7 +28,7 @@ const PaymentScreen = () => {
       const [ios_furl, setIosFurl] = useState(
         'https://failure-kohl.vercel.app',
       );
-      const [environment, setEnvironment] = useState<"0" | "1">("0");
+      const [environment, setEnvironment] = useState<'0' | '1'>('0');
       const [android_surl, setAndroidSurl] = useState(
         'https://success-nine.vercel.app',
       );
@@ -48,7 +48,7 @@ const PaymentScreen = () => {
 
   const [secondaryColor, setSecondaryColor] = useState('#022daf');
   const [merchantName, setMerchantName] = useState('Luvsab Diamonds'); // Updated merchant name
-  const [merchantLogo, setMerchantLogo] = useState("" );
+  const [merchantLogo, setMerchantLogo] = useState('' );
 
   const [cartDetails, setCartDetails] = useState([
     {Order: 'Diamond Purchase'},
@@ -116,12 +116,12 @@ const PaymentScreen = () => {
   };
   const displayAlert = (title: string, value: string) => {
     Alert.alert(title, value);
-    
+
   };
   const onPaymentSuccess = (e: any) => {
     console.log(e.merchantResponse);
      console.log(e.payuResponse);
-     displayAlert('onPaymentSuccess', "Payment success");
+     displayAlert('onPaymentSuccess', 'Payment success');
      // Navigate back to VideoCallScreen or ChatScreen on success
      navigation.goBack(); // Or navigate to a specific success screen
    };
@@ -131,14 +131,14 @@ const PaymentScreen = () => {
     console.log(e.payuResponse);
     displayAlert('onPaymentFailure', JSON.stringify(e));
     navigation.goBack(); // Go back on failure
-  }
+  };
 
 
   const onPaymentCancel = (e: any) => {
     console.log('onPaymentCancel isTxnInitiated -' + e);
     displayAlert('onPaymentCancel', JSON.stringify(e));
     navigation.goBack(); // Go back on cancel
-  }
+  };
 
   const onError = (e: any) => {
  displayAlert('onError', JSON.stringify(e));
@@ -193,7 +193,7 @@ const PaymentScreen = () => {
     };
   }, [merchantSalt]);
 
-  const createPaymentParams=()=>{
+  const createPaymentParams = ()=>{
     var txnid = new Date().getTime().toString();
     var payUPaymentParams = {
         key: key,
@@ -240,12 +240,12 @@ const PaymentScreen = () => {
         payUCheckoutProConfig: payUCheckoutProConfig,
       };
 
-  }
+  };
 
-  const lunchPayUPayment=()=>{
+  const lunchPayUPayment = ()=>{
     PayUBizSdk.openCheckoutScreen(createPaymentParams());
 
-}
+};
 
   return (
     <View style={styles.container}>
@@ -253,10 +253,10 @@ const PaymentScreen = () => {
       <Text style={styles.loadingText}>Redirecting to payment gateway...</Text>
       <Text style={styles.amountText}>Your payable Amount is ₹{amount} for {purchasedCoins} Diamonds</Text>
     </View>
-  )
-}
+  );
+};
 
-export default PaymentScreen
+export default PaymentScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -276,4 +276,4 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign: 'center',
   },
-})
+});

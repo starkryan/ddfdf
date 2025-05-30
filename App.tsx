@@ -1,19 +1,20 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import "./global.css"
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import './global.css';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Toaster } from 'sonner-native';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import './src/locales/i18n';
-import { StatusBar, StyleSheet, Platform, View, AppState, AppStateStatus, NativeModules, Vibration } from 'react-native';
+import { StatusBar, StyleSheet, Platform, AppState, AppStateStatus, NativeModules } from 'react-native';
 import { navigationRef } from './src/utils/navigationService';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { AuthProvider } from './src/hooks/authContext';
 import messaging, {
-  FirebaseMessagingTypes
+  FirebaseMessagingTypes,
 } from '@react-native-firebase/messaging';
 import notifee, { AndroidImportance } from '@notifee/react-native';
 import NotificationService from './src/services/NotificationService';
 import { GestureHandlerRootView } from 'react-native-gesture-handler'; // Import GestureHandlerRootView
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'; // Import BottomSheetModalProvider
 
 
 import SplashScreen from './src/components/SplashScreen';
@@ -38,7 +39,7 @@ declare global {
 
 // For React Native Firebase, the default app is automatically initialized
 const app = getApp();
-const messagingInstance = firebase.messaging();
+const _messagingInstance = firebase.messaging();
 
 // Check if running in an emulator - this will help with debugging
 if (Platform.OS === 'android') {
@@ -86,7 +87,7 @@ firebase.messaging().setBackgroundMessageHandler(async (remoteMessage: FirebaseM
       data: remoteMessage.data, // Pass along any other data
     });
   } else {
-    console.warn("Received background message without title/body in data payload:", remoteMessage.data);
+    console.warn('Received background message without title/body in data payload:', remoteMessage.data);
   }
 });
 
@@ -107,13 +108,13 @@ const App = () => {
   const [firebaseInitialized, setFirebaseInitialized] = useState(false);
   const [adsInitialized, setAdsInitialized] = useState(false);
   const [appOpenAdReady, setAppOpenAdReady] = useState(false);
-  const [purchasesInitialized, setPurchasesInitialized] = useState(false);
+  const [_purchasesInitialized, _setPurchasesInitialized] = useState(false);
   const initializeCoins = useCoinStore((state) => state.initializeCoins);
   const addCoins = useCoinStore((state) => state.addCoins);
-  const [isNetworkConnected, setIsNetworkConnected] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
-  const appState = React.useRef(AppState.currentState);
-  const isForeground = React.useRef(true);
+  const [_isNetworkConnected, _setIsNetworkConnected] = useState(true);
+  const [_isLoading, _setIsLoading] = useState(true);
+  const _appState = React.useRef(AppState.currentState);
+  const _isForeground = React.useRef(true);
 
   // State for incoming call feature
   const [incomingCharacter, setIncomingCharacter] = useState<any>(null); // State to store the fetched character
@@ -242,7 +243,7 @@ const App = () => {
   useEffect(() => {
     // Initialize AdMob
     const initializeAdMob = async () => {
-      if (Platform.OS !== 'android' && Platform.OS !== 'ios') return;
+      if (Platform.OS !== 'android' && Platform.OS !== 'ios') {return;}
 
       try {
         await MobileAds().initialize();
@@ -314,7 +315,7 @@ const App = () => {
             sound: 'default',
             vibration: true,
             vibrationPattern: [300, 500, 300, 500],
-            badge: true
+            badge: true,
           });
 
           const unsubscribe = firebase.messaging().onMessage(async (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
@@ -339,7 +340,7 @@ const App = () => {
                 data: remoteMessage.data,
               });
             } else {
-              console.warn("Received foreground message without title/body in data payload:", remoteMessage.data);
+              console.warn('Received foreground message without title/body in data payload:', remoteMessage.data);
             }
           });
 
@@ -359,7 +360,7 @@ const App = () => {
     // Initialize app services
     const init = async () => {
       try {
-        if (!firebaseInitialized) return;
+        if (!firebaseInitialized) {return;}
 
         try {
           const storedCoins = await AsyncStorage.getItem('@coins');
@@ -466,22 +467,24 @@ const App = () => {
     <SafeAreaProvider>
       <StatusBar barStyle="light-content" backgroundColor="#000000" translucent />
       <GestureHandlerRootView style={styles.container}>
-        <AuthProvider>
-          <NavigationContainer
-            ref={navigationRef}
-            theme={MyTheme}
-            onStateChange={() => {
-              if (!showSplash && Platform.OS === 'android' && Math.random() < 0.2) {
-                AdMobService.getInstance().showAppOpenAd().catch(err => {
-                  console.log('Failed to show app open ad on navigation:', err);
-                });
-              }
-            }}
-          >
-            <AppNavigator triggerIncomingCall={triggerIncomingCall}  />
-          </NavigationContainer>
-        </AuthProvider>
-        <Toaster />
+        <BottomSheetModalProvider>
+          <AuthProvider>
+            <NavigationContainer
+              ref={navigationRef}
+              theme={MyTheme}
+              onStateChange={() => {
+                if (!showSplash && Platform.OS === 'android' && Math.random() < 0.2) {
+                  AdMobService.getInstance().showAppOpenAd().catch(err => {
+                    console.log('Failed to show app open ad on navigation:', err);
+                  });
+                }
+              }}
+            >
+              <AppNavigator triggerIncomingCall={triggerIncomingCall}  />
+            </NavigationContainer>
+          </AuthProvider>
+          <Toaster />
+        </BottomSheetModalProvider>
       </GestureHandlerRootView>
       {showSplash && <SplashScreen onAnimationFinish={handleSplashFinish} />}
       {showIncomingCall && incomingCharacter && fetchedVideoUrls.length > 0 && (

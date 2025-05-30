@@ -11,7 +11,7 @@ interface CoinState {
 
 export const useCoinStore = create<CoinState>((set, get) => ({
   coins: 0,
-  
+
   addCoins: (amount: number) => {
     set((state) => {
       const newCoins = state.coins + amount;
@@ -21,13 +21,13 @@ export const useCoinStore = create<CoinState>((set, get) => ({
       return { coins: newCoins };
     });
   },
-  
+
   removeCoins: (amount: number) => {
     const { coins } = get();
     if (coins < amount) {
       return false;
     }
-    
+
     set((state) => {
       const newCoins = state.coins - amount;
       AsyncStorage.setItem('@coins', String(newCoins)).catch(error => {
@@ -35,10 +35,10 @@ export const useCoinStore = create<CoinState>((set, get) => ({
       });
       return { coins: newCoins };
     });
-    
+
     return true;
   },
-  
+
   initializeCoins: async () => {
     try {
       const storedCoins = await AsyncStorage.getItem('@coins');
@@ -49,11 +49,11 @@ export const useCoinStore = create<CoinState>((set, get) => ({
       set({ coins: 0 });
     }
   },
-  
+
   setCoins: (amount: number) => {
     set({ coins: amount });
     AsyncStorage.setItem('@coins', String(amount)).catch(error => {
       console.error('Failed to save coins to storage:', error);
     });
   },
-})); 
+}));

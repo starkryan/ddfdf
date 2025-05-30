@@ -1,13 +1,13 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Platform } from 'react-native';
-import { 
-  InterstitialAd, 
-  RewardedAd, 
-  RewardedInterstitialAd, 
+import {
+  InterstitialAd,
+  RewardedAd,
+  RewardedInterstitialAd,
   AdEventType,
   RewardedAdEventType,
   RewardedAdReward,
-  PaidEvent
+  PaidEvent,
 } from 'react-native-google-mobile-ads';
 import AdMobService from '../services/AdMobService';
 
@@ -64,7 +64,7 @@ export const useInterstitialAd = () => {
   }, []);
 
   // AdMobService handles preloading on init, nothing needed here
-  
+
   return {
     isLoaded: !loading, // Approximation - actual loading is handled by AdMobService
     error,
@@ -106,14 +106,14 @@ export const useRewardedAd = () => {
       setLoading(true);
       setEarned(false);
       setReward(null);
-      
+
       const earnedReward = await AdMobService.getInstance().showRewardedAd();
-      
+
       if (earnedReward) {
         setEarned(true);
         setReward(earnedReward);
       }
-      
+
       setLoading(false);
       return !!earnedReward;
     } catch (err) {
@@ -135,7 +135,7 @@ export const useRewardedAd = () => {
     // AdMobService now handles this automatically
     return true;
   }, []);
-  
+
   return {
     isLoaded: !loading, // Approximation - actual loading is handled by AdMobService
     error,
@@ -179,14 +179,14 @@ export const useRewardedInterstitialAd = () => {
       setLoading(true);
       setEarned(false);
       setReward(null);
-      
+
       const earnedReward = await AdMobService.getInstance().showRewardedInterstitialAd();
-      
+
       if (earnedReward) {
         setEarned(true);
         setReward(earnedReward);
       }
-      
+
       setLoading(false);
       return !!earnedReward;
     } catch (err) {
@@ -208,7 +208,7 @@ export const useRewardedInterstitialAd = () => {
     // AdMobService now handles this automatically
     return true;
   }, []);
-  
+
   return {
     isLoaded: !loading, // Approximation - actual loading is handled by AdMobService
     error,

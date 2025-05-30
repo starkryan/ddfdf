@@ -84,7 +84,7 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
                 {options.tabBarIcon && options.tabBarIcon({
                   color: isFocused ? '#fff' : 'rgba(255, 255, 255, 0.6)',
                   focused: isFocused,
-                  size: windowHeight * 0.03 // Responsive icon size
+                  size: windowHeight * 0.03, // Responsive icon size
                 })}
               </View>
               <Text

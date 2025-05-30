@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Platform, Text } from 'react-native';
-import { 
-  BannerAd, 
-  BannerAdSize, 
+import {
+  BannerAd,
+  BannerAdSize,
   PaidEvent} from 'react-native-google-mobile-ads';
 import { adUnitIds } from '../../services/AdMobService';
 import AdMobService from '../../services/AdMobService';
@@ -18,7 +18,7 @@ interface BannerAdComponentProps {
 /**
  * A reusable Banner Ad component that can be placed in various screens
  */
-const BannerAdComponent: React.FC<BannerAdComponentProps> = ({ 
+const BannerAdComponent: React.FC<BannerAdComponentProps> = ({
   size = BannerAdSize.BANNER,
   containerStyle = {},
   onAdLoaded,
@@ -30,9 +30,9 @@ const BannerAdComponent: React.FC<BannerAdComponentProps> = ({
   const [hideAdSpace, setHideAdSpace] = useState(false);
   const [retryAttempts, setRetryAttempts] = useState(0);
   const [adKey, setAdKey] = useState(0); // Used to force re-render
-  
+
   const MAX_RETRY_ATTEMPTS = 2;
-  
+
   // Determine which ad unit ID to use
   const getBannerAdUnitId = () => {
     // For development environment - use test ads
@@ -47,14 +47,14 @@ const BannerAdComponent: React.FC<BannerAdComponentProps> = ({
         return iOSTestId;
       } else {
         // Fallback for other platforms in DEV (shouldn't happen for mobile)
-        return 'ca-app-pub-3940256099942544/6300978111'; 
+        return 'ca-app-pub-3940256099942544/6300978111';
       }
     } else {
       // For production, use the real ad unit ID from AdMobService
       return adUnitIds.banner;
     }
   };
-  
+
   useEffect(() => {
     return () => {
       // Clean up on unmount
@@ -72,7 +72,7 @@ const BannerAdComponent: React.FC<BannerAdComponentProps> = ({
       setAdKey(prev => prev + 1);
       // Reset error
       setError(null);
-      
+
       if (__DEV__) {
         console.log(`Retrying banner ad load (attempt ${retryAttempts + 1}/${MAX_RETRY_ATTEMPTS})`);
       }
@@ -88,7 +88,7 @@ const BannerAdComponent: React.FC<BannerAdComponentProps> = ({
   if (Platform.OS !== 'android') {
     return null;
   }
-  
+
   // If we've decided to hide the ad space due to persistent errors
   if (hideAdSpace) {
     return null;
@@ -99,7 +99,7 @@ const BannerAdComponent: React.FC<BannerAdComponentProps> = ({
       console.error('Banner ad failed to load:', error);
     }
     setError(error);
-    
+
     // If it's a "no-fill" error, try again after a delay
     if (error.message && error.message.includes('no-fill')) {
       if (retryAttempts < MAX_RETRY_ATTEMPTS) {
@@ -111,14 +111,14 @@ const BannerAdComponent: React.FC<BannerAdComponentProps> = ({
     } else {
       // For other errors, hide immediately if severe
       if (error.message && (
-          error.message.includes('invalid') || 
+          error.message.includes('invalid') ||
           error.message.includes('network') ||
           error.message.includes('timeout')
         )) {
         setHideAdSpace(true);
       }
     }
-    
+
     if (onAdFailedToLoad) {
       onAdFailedToLoad(error);
     }
@@ -128,7 +128,7 @@ const BannerAdComponent: React.FC<BannerAdComponentProps> = ({
   const handleAdRevenue = (event: PaidEvent) => {
     // Forward to our AdMobService for centralized tracking
     AdMobService.getInstance().handleAdRevenue(event);
-    
+
     // Also call component-specific callback if provided
     if (onAdRevenue) {
       onAdRevenue(event);
@@ -136,11 +136,11 @@ const BannerAdComponent: React.FC<BannerAdComponentProps> = ({
   };
 
   return (
-    <View 
+    <View
       style={[
-        styles.container, 
-        containerStyle, 
-        !adLoaded && styles.hidden
+        styles.container,
+        containerStyle,
+        !adLoaded && styles.hidden,
       ]}
     >
       <BannerAd
@@ -153,7 +153,7 @@ const BannerAdComponent: React.FC<BannerAdComponentProps> = ({
           }
           setAdLoaded(true);
           setRetryAttempts(0); // Reset retry counter on success
-          if (onAdLoaded) onAdLoaded();
+          if (onAdLoaded) {onAdLoaded();}
         }}
         onAdFailedToLoad={handleAdFailedToLoad}
         requestOptions={{
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     color: 'red',
     fontSize: 10,
     marginTop: 4,
-  }
+  },
 });
 
 export default BannerAdComponent;

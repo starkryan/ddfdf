@@ -42,13 +42,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Load storage items in parallel
         const [hasLaunched, storedProfile] = await Promise.all([
           AsyncStorage.getItem('hasLaunched'),
-          AsyncStorage.getItem('userProfile')
+          AsyncStorage.getItem('userProfile'),
         ]);
-        
+
         if (storedProfile) {
           setUserProfile(JSON.parse(storedProfile));
         }
-        
+
         setIsAuthenticated(!!uid && hasLaunched === 'true');
       } catch (error) {
         console.error('Error checking auth status:', error);
@@ -66,18 +66,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       // Start Firebase auth immediately
       const uidPromise = signInAnonymously();
-      
+
       // Prepare profile data if needed
       const profileData = !userProfile ? {
         name: 'New User',
-        avatar: DEFAULT_AVATAR // Now using the local image
+        avatar: DEFAULT_AVATAR, // Now using the local image
       } : null;
 
       // Run all async operations in parallel
       const [uid] = await Promise.all([
         uidPromise,
         AsyncStorage.setItem('hasLaunched', 'true'),
-        profileData && AsyncStorage.setItem('userProfile', JSON.stringify(profileData))
+        profileData && AsyncStorage.setItem('userProfile', JSON.stringify(profileData)),
       ].filter(Boolean));
 
       // Update state synchronously
@@ -93,17 +93,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Optimized logout function
   const logout = async () => {
-    if (isLoggingOut) return;
-    
+    if (isLoggingOut) {return;}
+
     try {
       setIsLoggingOut(true);
-      
+
       // Run all logout operations in parallel
       await Promise.all([
         firebaseSignOut(),
-        AsyncStorage.multiRemove(['hasLaunched', 'userProfile'])
+        AsyncStorage.multiRemove(['hasLaunched', 'userProfile']),
       ]);
-      
+
       // Update state synchronously
       setIsAuthenticated(false);
       setUserProfile(null);
@@ -120,7 +120,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const updatedProfile = {
         ...userProfile,
-        ...profile
+        ...profile,
       };
       await AsyncStorage.setItem('userProfile', JSON.stringify(updatedProfile));
       setUserProfile(updatedProfile as UserProfile);
@@ -131,13 +131,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      isAuthenticated, 
-      isLoading, 
-      userProfile, 
-      login, 
+    <AuthContext.Provider value={{
+      isAuthenticated,
+      isLoading,
+      userProfile,
+      login,
       logout,
-      updateProfile 
+      updateProfile,
     }}>
       {children}
     </AuthContext.Provider>
@@ -151,4 +151,4 @@ export const useAuth = (): AuthContextType => {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}; 
+};

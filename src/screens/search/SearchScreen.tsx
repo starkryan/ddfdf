@@ -32,7 +32,7 @@ const countryFlags: Record<string, string> = {
   'Chile': '🇨🇱',
   'Mexico': '🇲🇽',
   'Colombia': '🇨🇴',
-  'Peru': '🇵🇪'
+  'Peru': '🇵🇪',
 };
 
 // Fallback data in case API fails
@@ -116,21 +116,21 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [showPremiumOnly, setShowPremiumOnly] = useState(false);
   const insets = useSafeAreaInsets();
-  
-  
+
+
   // Replace the hook with state to track ad loading
   const [isRewardedAdLoading, setIsRewardedAdLoading] = useState(false);
   const { addCoins, coins } = useCoinStore();
 
   useEffect(() => {
     fetchCharacters();
-    
+
     // Preload a rewarded ad using AdMobService
     if (Platform.OS === 'android') {
       preloadRewardedAd();
     }
   }, []);
-  
+
   // Preload rewarded ad function
   const preloadRewardedAd = async () => {
     try {
@@ -149,7 +149,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
     try {
       const adMobService = AdMobService.getInstance();
       const reward = await adMobService.showRewardedAd();
-      
+
       if (reward) {
         const rewardAmount = 15;
         addCoins(rewardAmount);
@@ -173,13 +173,13 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
       setLoading(true);
       // Make half the profiles premium in development
       let data = await getCharacters();
-      
+
       // Add premium property to profiles
       data = data.map((profile: Profile, index: number) => ({
         ...profile,
-        isPremium: index % 3 === 0 // Every third profile is premium
+        isPremium: index % 3 === 0, // Every third profile is premium
       }));
-      
+
       setProfiles(data);
       setAllProfiles(data);
       setLoading(false);
@@ -192,10 +192,10 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
   };
 
   const filterProfiles = () => {
-    if (!allProfiles.length) return;
-    
+    if (!allProfiles.length) {return;}
+
     let filtered = [...allProfiles];
-    
+
     // Apply search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
@@ -208,12 +208,12 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
         );
       });
     }
-    
+
     // Apply premium filter if enabled
     if (showPremiumOnly) {
       filtered = filtered.filter(profile => profile.isPremium);
     }
-    
+
     setProfiles(filtered);
   };
 
@@ -233,7 +233,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
       navigation.navigate('Character', { profile });
     }
   };
-  
+
   const showPremiumAdPrompt = () => {
     toast('Watch an ad to unlock premium profiles!');
     showRewardedAd();
@@ -244,18 +244,18 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
     let style = profile.style as StyleType;
     if (!style && profile.traits && profile.traits.length > 0) {
       const trait = profile.traits[0];
-      if (trait.includes('academic') || trait.includes('smart')) style = 'Academic';
-      else if (trait.includes('elegant') || trait.includes('fashion')) style = 'Elegant';
-      else if (trait.includes('gothic') || trait.includes('dark')) style = 'Gothic';
-      else if (trait.includes('athletic') || trait.includes('sports')) style = 'Athletic';
-      else if (trait.includes('artistic') || trait.includes('creative')) style = 'Artistic';
-      else style = 'Academic'; // Default
+      if (trait.includes('academic') || trait.includes('smart')) {style = 'Academic';}
+      else if (trait.includes('elegant') || trait.includes('fashion')) {style = 'Elegant';}
+      else if (trait.includes('gothic') || trait.includes('dark')) {style = 'Gothic';}
+      else if (trait.includes('athletic') || trait.includes('sports')) {style = 'Athletic';}
+      else if (trait.includes('artistic') || trait.includes('creative')) {style = 'Artistic';}
+      else {style = 'Academic';} // Default
     }
-    
+
     const borderColors = getStyleColors(style);
     const imageUri = typeof profile.image === 'string' ? profile.image : profile.image.uri;
-    const backgroundImageUri = typeof profile.backgroundImage === 'string' ? profile.backgroundImage : profile.backgroundImage?.uri; 
-    
+    const backgroundImageUri = typeof profile.backgroundImage === 'string' ? profile.backgroundImage : profile.backgroundImage?.uri;
+
     return (
       <Animated.View
         entering={FadeInDown.delay(index * 100)}
@@ -281,7 +281,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
                   style={{ height: CARD_WIDTH * 1.4, resizeMode: 'cover' }}
                 />
               )}
-            
+
               {/* Premium Badge */}
               {profile.isPremium && (
                 <View className="absolute top-2 right-2 bg-yellow-500/90 rounded-full px-3 py-1 flex-row items-center">
@@ -289,7 +289,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
                   <Text className="text-white text-xs ml-1 font-bold">Premium</Text>
                 </View>
               )}
-              
+
               {/* New Badge */}
               {profile.isNew && (
                 <View className="absolute top-2 left-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-3 py-1 flex-row items-center">
@@ -314,9 +314,9 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
                   {/* Location with flag */}
                   {profile.location && (
                     <View className="flex-row items-center space-x-1 ml-2">
-                      <Text 
-                        className="text-gray-300 text-xs font-medium" 
-                        numberOfLines={1} 
+                      <Text
+                        className="text-gray-300 text-xs font-medium"
+                        numberOfLines={1}
                         ellipsizeMode="tail"
                       >
                         {profile.location.split(' ')[0]}
@@ -347,7 +347,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
         barStyle="light-content"
         translucent
       />
-      
+
       <SafeAreaView className="flex-1" edges={['top']}>
         {/* Header with back button and search input */}
         <View className="px-4 py-4 bg-[#111827]">
@@ -357,7 +357,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
             </TouchableOpacity>
             <Text className="text-2xl font-bold text-white">Search</Text>
           </View>
-          
+
           {/* Search Input */}
           <View className="flex-row items-center bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-2">
             <Icon name="magnify" size={20} color="#fff" />
@@ -410,12 +410,12 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
             keyExtractor={(item) => item.id}
             numColumns={2}
             columnWrapperStyle={{ justifyContent: 'space-between' }}
-            contentContainerStyle={{ 
+            contentContainerStyle={{
               paddingHorizontal: 16,
               paddingTop: 12,
-              paddingBottom: Platform.OS === 'ios' ? 
-                100 + Math.min(insets.bottom, 20) : 
-                120 + Math.min(insets.bottom, 15)
+              paddingBottom: Platform.OS === 'ios' ?
+                100 + Math.min(insets.bottom, 20) :
+                120 + Math.min(insets.bottom, 15),
             }}
             showsVerticalScrollIndicator={true}
             indicatorStyle="white"

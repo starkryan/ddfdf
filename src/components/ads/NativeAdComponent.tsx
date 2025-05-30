@@ -31,21 +31,21 @@ interface NativeAdComponentProps {
 const NativeAdComponent: React.FC<NativeAdComponentProps> = ({
   containerStyle,
   onAdLoaded,
-  onAdFailedToLoad
+  onAdFailedToLoad,
 }) => {
   const [ad, setAd] = useState<NativeAd | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [adKey, setAdKey] = useState(1); // Used to force refresh when needed
   const [retryAttempts, setRetryAttempts] = useState(0);
-  
+
   const MAX_RETRY_ATTEMPTS = 2;
   const loadedListener = useRef<EmitterSubscription | null>(null);
   const errorListener = useRef<EmitterSubscription | null>(null);
 
   useEffect(() => {
     loadNativeAd();
-    
+
     return () => {
       // Clean up listeners and resources
       if (ad) {
@@ -59,7 +59,7 @@ const NativeAdComponent: React.FC<NativeAdComponentProps> = ({
   const loadNativeAd = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       // Clean up previous ad if exists
       if (ad) {
@@ -67,17 +67,17 @@ const NativeAdComponent: React.FC<NativeAdComponentProps> = ({
         errorListener.current?.remove();
         ad.destroy();
       }
-      
+
       // Create a native ad request
       const nativeAd = await NativeAd.createForAdRequest(adUnitIds.native, {
         requestNonPersonalizedAdsOnly: false,
         keywords: ['game', 'chat', 'social', 'entertainment'],
       });
-      
+
       // Add event listeners - Note that for NativeAd, these listeners are already registered
       // internally during creation, and we just need to handle when the ad is ready
       setAd(nativeAd);
-      
+
       // The NativeAd is already loaded at this point from createForAdRequest
       setTimeout(() => {
         if (nativeAd) {
@@ -86,7 +86,7 @@ const NativeAdComponent: React.FC<NativeAdComponentProps> = ({
           }
           setLoading(false);
           setRetryAttempts(0); // Reset retry counter on success
-          if (onAdLoaded) onAdLoaded();
+          if (onAdLoaded) {onAdLoaded();}
         }
       }, 100);
     } catch (err) {
@@ -96,14 +96,14 @@ const NativeAdComponent: React.FC<NativeAdComponentProps> = ({
       }
       setError(error);
       setLoading(false);
-      
+
       // Handle retries for errors
       if (retryAttempts < MAX_RETRY_ATTEMPTS) {
         const delay = Math.pow(2, retryAttempts) * 1000; // Exponential backoff
         if (__DEV__) {
           console.log(`Retrying native ad load in ${delay}ms (attempt ${retryAttempts + 1}/${MAX_RETRY_ATTEMPTS})`);
         }
-        
+
         setTimeout(() => {
           setRetryAttempts(prev => prev + 1);
           setAdKey(prev => prev + 1); // Force reload
@@ -137,7 +137,7 @@ const NativeAdComponent: React.FC<NativeAdComponentProps> = ({
           <Text style={styles.errorText}>
             {error?.message || 'Failed to load ad'}
           </Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.retryButton}
             onPress={() => setAdKey(prev => prev + 1)} // Force reload
           >
@@ -167,9 +167,9 @@ const NativeAdComponent: React.FC<NativeAdComponentProps> = ({
         {/* Icon & Headline Row */}
         <View style={styles.headerRow}>
           {ad.icon && (
-            <Image 
-              source={{ uri: ad.icon.url }} 
-              style={styles.icon} 
+            <Image
+              source={{ uri: ad.icon.url }}
+              style={styles.icon}
               resizeMode="cover"
             />
           )}

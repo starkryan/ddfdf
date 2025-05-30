@@ -59,18 +59,18 @@ function ChatScreen({ route, navigation }: Props) {
   const isSendingMessage = useRef(false);
   const typingAnimation = useRef(new Animated.Value(0)).current;
   const [showCallModal, setShowCallModal] = useState(false);
-  
+
   // Report feature state
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportedMessage, setReportedMessage] = useState<Message | null>(null);
   const [reportReason, setReportReason] = useState('');
   const [isSubmittingReport, setIsSubmittingReport] = useState(false);
-  
+
   // Calculate Header Height for Keyboard Offset (Estimate)
   // Adjust this value based on your actual header's final height
-  const HEADER_HEIGHT_ESTIMATE = 70; 
+  const HEADER_HEIGHT_ESTIMATE = 70;
   const keyboardOffset = Platform.OS === 'ios' ? insets.top + HEADER_HEIGHT_ESTIMATE : 0;
-  
+
   // Initialize rewarded ad
   const { isLoaded: rewardedAdLoaded, load: loadRewardedAd, show: showRewardedAd, earned, reward } = useRewardedAd();
   const { addCoins, removeCoins, coins } = useCoinStore();
@@ -84,7 +84,7 @@ function ChatScreen({ route, navigation }: Props) {
       try {
         // Check if user is already signed in
         const currentUser = auth().currentUser;
-        
+
         if (!currentUser) {
           // Sign in anonymously if no user exists
           await auth().signInAnonymously();
@@ -92,7 +92,7 @@ function ChatScreen({ route, navigation }: Props) {
         } else {
           console.log('User already signed in', currentUser.uid);
         }
-        
+
         setIsAuthenticated(true);
       } catch (error) {
         console.error('Firebase authentication error:', error);
@@ -100,14 +100,14 @@ function ChatScreen({ route, navigation }: Props) {
         setIsAuthenticated(true);
       }
     };
-    
+
     initializeAuth();
-    
+
     // Listen for auth state changes
     const unsubscribe = auth().onAuthStateChanged(user => {
       setIsAuthenticated(!!user);
     });
-    
+
     return () => unsubscribe();
   }, []);
 
@@ -133,7 +133,7 @@ function ChatScreen({ route, navigation }: Props) {
   useEffect(() => {
     let keyboardDidShowListener: EmitterSubscription;
     let keyboardDidHideListener: EmitterSubscription;
-    
+
     // Set up listeners for both platforms
     keyboardDidShowListener = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardDidShow' : 'keyboardDidShow',
@@ -141,14 +141,14 @@ function ChatScreen({ route, navigation }: Props) {
         scrollToBottom();
       }
     );
-    
+
     keyboardDidHideListener = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardDidHide' : 'keyboardDidHide',
       () => {
         scrollToBottom();
       }
     );
-    
+
     return () => {
       keyboardDidShowListener?.remove();
       keyboardDidHideListener?.remove();
@@ -165,13 +165,13 @@ function ChatScreen({ route, navigation }: Props) {
   // Load existing messages on mount
   useEffect(() => {
     loadMessages();
-    
+
     // Load rewarded ad
     if (Platform.OS === 'android') {
       loadRewardedAd().catch(err => {
         console.log('Failed to load rewarded ad:', err);
       });
-      
+
       // Load interstitial ad for call button
       loadInterstitialAd().catch(err => {
         console.log('Failed to load interstitial ad:', err);
@@ -221,11 +221,11 @@ function ChatScreen({ route, navigation }: Props) {
           id: characterId,
           name: profile.name,
           image: profile.image,
-          backgroundImage: profile.backgroundImage
+          backgroundImage: profile.backgroundImage,
         },
         lastMessage,
         lastMessageTime: new Date(),
-        unread: false
+        unread: false,
       };
 
       // Remove existing conversation if it exists
@@ -239,7 +239,7 @@ function ChatScreen({ route, navigation }: Props) {
       // Save complete chat messages (both user messages and AI responses)
       await AsyncStorage.setItem(`chat_${characterId}`, JSON.stringify({
         messages: allMessages,
-        unread: false
+        unread: false,
       }));
     } catch (error) {
       console.error('Error saving conversation:', error);
@@ -265,7 +265,7 @@ function ChatScreen({ route, navigation }: Props) {
   const checkMessageLimit = useCallback(() => {
     const newCount = messageCount + 1;
     setMessageCount(newCount);
-    
+
     // Check if we've reached the limit and should show the ad prompt
     if (newCount > 0 && newCount % MAX_FREE_MESSAGES === 0) {
       // If user has enough coins, just deduct and continue
@@ -314,14 +314,14 @@ function ChatScreen({ route, navigation }: Props) {
       toast.error('Please select a reason for reporting'); // Replaced Toast.error
       return;
     }
-    
+
     if (!isAuthenticated) {
       toast.error('Authentication required to submit report'); // Replaced Toast.error
       return;
     }
-    
+
     setIsSubmittingReport(true);
-    
+
     try {
       // Submit report to API
       await reportAPI({
@@ -331,10 +331,10 @@ function ChatScreen({ route, navigation }: Props) {
         metadata: {
           messageId: reportedMessage.id,
           messageTimestamp: reportedMessage.timestamp,
-          conversationId: `chat_${characterId}`
-        }
+          conversationId: `chat_${characterId}`,
+        },
       });
-      
+
       toast.success('Thank you for your report'); // Replaced Toast.success
       setShowReportModal(false);
       setReportedMessage(null);
@@ -355,18 +355,18 @@ function ChatScreen({ route, navigation }: Props) {
           Animated.timing(typingAnimation, {
             toValue: 1,
             duration: 500,
-            useNativeDriver: true
+            useNativeDriver: true,
           }),
           Animated.timing(typingAnimation, {
             toValue: 0,
             duration: 500,
-            useNativeDriver: true
-          })
+            useNativeDriver: true,
+          }),
         ])
       );
-      
+
       animation.start();
-      
+
       return () => animation.stop();
     }, []);
 
@@ -378,22 +378,22 @@ function ChatScreen({ route, navigation }: Props) {
           style={{ alignSelf: 'flex-end' }}
         />
         <View className="rounded-2xl px-4 py-3 bg-gray-700/90 flex-row items-center space-x-1">
-          <Animated.View 
+          <Animated.View
             className="w-2 h-2 rounded-full bg-gray-400"
             style={{ opacity: typingAnimation }}
           />
-          <Animated.View 
+          <Animated.View
             className="w-2 h-2 rounded-full bg-gray-400"
             style={{ opacity: typingAnimation.interpolate({
               inputRange: [0, 1],
-              outputRange: [0.3, 1]
+              outputRange: [0.3, 1],
             }) }}
           />
-          <Animated.View 
+          <Animated.View
             className="w-2 h-2 rounded-full bg-gray-400"
             style={{ opacity: typingAnimation.interpolate({
               inputRange: [0, 1],
-              outputRange: [0.1, 1]
+              outputRange: [0.1, 1],
             }) }}
           />
         </View>
@@ -411,18 +411,18 @@ function ChatScreen({ route, navigation }: Props) {
   }, []);
 
   const handleSendMessage = useCallback(async () => {
-    if (!inputText.trim() || isLoading) return;
+    if (!inputText.trim() || isLoading) {return;}
     if (!characterId) {
       Alert.alert('Error', 'No character selected');
       return;
     }
-    
+
     // Check if user can send more messages
     if (showRewardedAdPrompt) {
       toast('Please watch an ad or use coins to continue'); // Replaced Toast.info
       return;
     }
-    
+
     // Check message limit
     if (!checkMessageLimit()) {
       return;
@@ -433,7 +433,7 @@ function ChatScreen({ route, navigation }: Props) {
       id: Date.now().toString(),
       text: inputText.trim(),
       isUser: true,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
     // Add user message immediately
@@ -442,7 +442,7 @@ function ChatScreen({ route, navigation }: Props) {
     setInputText('');
     setIsLoading(true);
     setIsTyping(true);
-    
+
     // Immediately scroll to bottom after sending
     scrollToBottom();
 
@@ -452,25 +452,25 @@ function ChatScreen({ route, navigation }: Props) {
         userMessage.text,
         updatedMessages
       );
-      
+
       // Update messages with the response
       const finalMessages = [...updatedMessages, response];
       setMessages(finalMessages);
-      
+
       // Save conversation after successful message
       await saveToInbox(response.text, finalMessages);
     } catch (error: any) {
       console.error('Error sending message:', error);
-      
+
       const errorMessage: Message = {
         id: Date.now().toString(),
         text: "I'm having trouble connecting right now. Can you try again in a moment?",
         isUser: false,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
       const messagesWithError = [...updatedMessages, errorMessage];
       setMessages(messagesWithError);
-      
+
       await saveToInbox(errorMessage.text, messagesWithError);
 
       Alert.alert(
@@ -498,7 +498,7 @@ function ChatScreen({ route, navigation }: Props) {
   };
 
   const renderMessage = ({ item }: { item: Message }) => (
-    <View 
+    <View
       className={`flex-row ${item.isUser ? 'justify-end' : 'justify-start'} mb-4 mx-4`}
     >
       {!item.isUser && (
@@ -508,7 +508,7 @@ function ChatScreen({ route, navigation }: Props) {
           style={{ alignSelf: 'flex-end' }}
         />
       )}
-      <View 
+      <View
         className={`rounded-2xl px-4 py-2 max-w-[75%] ${
           item.isUser ? 'bg-blue-500/90' : 'bg-gray-700/90'
         }`}
@@ -519,7 +519,7 @@ function ChatScreen({ route, navigation }: Props) {
             {formatTime(item.timestamp)}
           </Text>
           {!item.isUser && (
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => handleReportMessage(item)}
               className="ml-2"
               hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
@@ -534,8 +534,8 @@ function ChatScreen({ route, navigation }: Props) {
 
   // Render the rewarded ad prompt
   const renderRewardedAdPrompt = () => {
-    if (!showRewardedAdPrompt) return null;
-    
+    if (!showRewardedAdPrompt) {return null;}
+
     return (
       <View className="m-4 bg-gray-800/95 p-4 rounded-xl border border-pink-500/40">
         <Text className="text-white font-medium text-center mb-2">
@@ -573,7 +573,7 @@ function ChatScreen({ route, navigation }: Props) {
   // Handle call button press
   const handleCallPress = async () => {
     toast('Connecting call...'); // Replaced Toast.info
-    
+
     try {
       if (interstitialAdLoaded) {
         await showInterstitialAd();
@@ -613,7 +613,7 @@ function ChatScreen({ route, navigation }: Props) {
               </Text>
               <Text className="text-pink-400 text-sm mb-6">You earned 1 coin for testing this feature</Text>
             </View>
-            
+
             <TouchableOpacity
               onPress={() => setShowCallModal(false)}
               className="bg-pink-500 py-3.5 rounded-xl items-center"
@@ -638,24 +638,24 @@ function ChatScreen({ route, navigation }: Props) {
         <View className="flex-1 justify-center items-center bg-black/70">
           <View className="bg-gray-800 w-[85%] rounded-3xl p-6 border border-white/20">
             <Text className="text-white text-xl font-bold mb-2 text-center">Report Content</Text>
-            
+
             <Text className="text-gray-300 text-center mb-4">
               Please select a reason for reporting this message
             </Text>
-            
+
             {/* Report reasons */}
             <View className="mb-4">
               {[
                 { id: 'offensive_language', label: 'Offensive language' },
                 { id: 'inappropriate_content', label: 'Inappropriate content' },
                 { id: 'harmful_information', label: 'Harmful information' },
-                { id: 'other', label: 'Other' }
+                { id: 'other', label: 'Other' },
               ].map(option => (
                 <TouchableOpacity
                   key={option.id}
                   className={`py-3 px-4 rounded-lg mb-2 flex-row items-center ${
-                    reportReason === option.id 
-                      ? 'bg-pink-500/20 border border-pink-500' 
+                    reportReason === option.id
+                      ? 'bg-pink-500/20 border border-pink-500'
                       : 'bg-gray-700 border border-gray-600'
                   }`}
                   onPress={() => setReportReason(option.id)}
@@ -671,7 +671,7 @@ function ChatScreen({ route, navigation }: Props) {
                 </TouchableOpacity>
               ))}
             </View>
-            
+
             {/* Buttons */}
             <View className="flex-row space-x-3 gap-x-3">
               <TouchableOpacity
@@ -701,24 +701,24 @@ function ChatScreen({ route, navigation }: Props) {
   };
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       behavior="padding"
       className="flex-1"
       keyboardVerticalOffset={keyboardOffset}
     >
       {/* Call modal */}
       {renderCallModal()}
-      
+
       {/* Report modal */}
       {renderReportModal()}
-      
+
       <View className="flex-1 bg-[#111827]">
         <StatusBar
           backgroundColor="transparent"
           barStyle="light-content"
           translucent
         />
-        <View 
+        <View
           className="absolute top-0 left-0 right-0 z-30 bg-[#111827]"
           style={{ height: insets.top }}
         />
@@ -731,8 +731,8 @@ function ChatScreen({ route, navigation }: Props) {
             className="flex-1"
           >
             {/* Header */}
-            <View 
-              className="px-4 pt-4 pb-2 bg-[#111827] border-b border-gray-800 z-20" 
+            <View
+              className="px-4 pt-4 pb-2 bg-[#111827] border-b border-gray-800 z-20"
               style={{ paddingTop: insets.top + 12 }}
             >
               <View className="flex-row items-center justify-between">
@@ -743,11 +743,11 @@ function ChatScreen({ route, navigation }: Props) {
                   >
                     <Icon name="arrow-left" size={20} color="#fff" />
                   </TouchableOpacity>
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     onPress={goToCharacterProfile}
                     className="flex-row items-center"
                   >
-                    <Image 
+                    <Image
                       source={{ uri: profileImage }}
                       className="w-10 h-10 rounded-full mr-3"
                     />
@@ -758,17 +758,17 @@ function ChatScreen({ route, navigation }: Props) {
                   </TouchableOpacity>
                 </View>
                 <View className="flex-row items-center space-x-3 gap-x-3">
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     onPress={handleCallPress}
                     className="bg-white/10 backdrop-blur-xl border border-white/20 p-2.5 rounded-xl"
                   >
                     <Icon name="phone" size={20} color="#22C55E" />
                   </TouchableOpacity>
-                  <View 
+                  <View
                     className="bg-white/10 backdrop-blur-xl border border-white/20 px-3 py-2 rounded-xl flex-row items-center"
                   >
-                    <Image 
-                      source={require('../../../assets/coin.png')} 
+                    <Image
+                      source={require('../../../assets/coin.png')}
                       className="w-5 h-5 mr-1.5"
                     />
                     <Text className="text-white font-medium">{coins}</Text>
@@ -776,7 +776,7 @@ function ChatScreen({ route, navigation }: Props) {
                 </View>
               </View>
             </View>
-            
+
             {/* Banner Ad */}
             {Platform.OS === 'android' && (
               <BannerAdComponent
@@ -813,7 +813,7 @@ function ChatScreen({ route, navigation }: Props) {
             />
 
             {/* Input Area Container */}
-            <View 
+            <View
               className="bg-gray-800/80 backdrop-blur-sm border-t border-gray-700/50"
             >
               {/* Rewarded Ad Prompt - Moved above input */}
@@ -822,20 +822,20 @@ function ChatScreen({ route, navigation }: Props) {
               {/* Message Input */}
               <View className="p-2">
                 <View className="flex-row items-center bg-gray-700/70 rounded-full px-3 py-1">
-                  <TouchableOpacity 
-                    className="mr-2" 
+                  <TouchableOpacity
+                    className="mr-2"
                     disabled={isLoading || showRewardedAdPrompt}
                     onPress={forceShowKeyboard}>
-                    <Icon 
-                      name="emoticon-outline" 
-                      size={24} 
-                      color={isLoading || showRewardedAdPrompt ? "#6B7280" : "#fff"} 
+                    <Icon
+                      name="emoticon-outline"
+                      size={24}
+                      color={isLoading || showRewardedAdPrompt ? '#6B7280' : '#fff'}
                     />
                   </TouchableOpacity>
                   <TextInput
                     ref={inputRef}
                     className="flex-1 text-white py-2 px-1"
-                    placeholder={showRewardedAdPrompt ? "Please watch ad or use coins" : "Type a message..."}
+                    placeholder={showRewardedAdPrompt ? 'Please watch ad or use coins' : 'Type a message...'}
                     placeholderTextColor="#9CA3AF"
                     value={inputText}
                     onChangeText={setInputText}
@@ -844,11 +844,11 @@ function ChatScreen({ route, navigation }: Props) {
                     style={{ color: isLoading || showRewardedAdPrompt ? '#6B7280' : '#FFFFFF' }}
                     onFocus={forceShowKeyboard}
                   />
-                  <Pressable 
-                    onPress={handleSendMessage} 
+                  <Pressable
+                    onPress={handleSendMessage}
                     disabled={isLoading || inputText.trim() === '' || showRewardedAdPrompt}
                   >
-                    <View 
+                    <View
                       className={`w-9 h-9 rounded-full items-center justify-center ${
                         inputText.trim() && !isLoading && !showRewardedAdPrompt ? 'bg-pink-600' : 'bg-gray-600'
                       }`}

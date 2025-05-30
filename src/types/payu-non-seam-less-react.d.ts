@@ -11,7 +11,7 @@ declare module 'payu-non-seam-less-react' {
     ios_furl: string;
     android_surl: string;
     android_furl: string;
-    environment: "0" | "1";
+    environment: '0' | '1';
     userCredential?: string;
     additionalParam?: {
       udf1?: string;
@@ -30,7 +30,7 @@ declare module 'payu-non-seam-less-react' {
       billingInterval: number;
       paymentStartDate: string;
       paymentEndDate: string;
-      billingCycle: "daily" | "weekly" | "yearly" | "adhoc" | "once" | "monthly";
+      billingCycle: 'daily' | 'weekly' | 'yearly' | 'adhoc' | 'once' | 'monthly';
       remarks?: string;
       billingCurrency: string;
     };

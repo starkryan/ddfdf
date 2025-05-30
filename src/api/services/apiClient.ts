@@ -8,7 +8,7 @@ import auth from '@react-native-firebase/auth';
 
 // Create an API client with the proper base URL and caching
 const API = setupCache(axios.create({
-  baseURL: `https://luvhai-605246487551.us-central1.run.app/api`,
+  baseURL: 'https://luvhai-605246487551.us-central1.run.app/api',
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -18,7 +18,7 @@ const API = setupCache(axios.create({
   // Basic cache configuration
   ttl: 5 * 60 * 1000, // 5 minutes cache
   interpretHeader: true, // Respect cache headers
-  methods: ['get'] // Only cache GET requests
+  methods: ['get'], // Only cache GET requests
 });
 
 // Helper function to get Firebase auth headers
@@ -28,7 +28,7 @@ const getFirebaseAuthHeaders = async (): Promise<Record<string, string>> => {
     const currentUser = auth().currentUser;
     if (currentUser) {
       headers['firebase-id'] = currentUser.uid;
-      
+
       // Only get token for non-anonymous users
       if (!currentUser.isAnonymous) {
         const token = await currentUser.getIdToken();
@@ -45,32 +45,32 @@ const getFirebaseAuthHeaders = async (): Promise<Record<string, string>> => {
 API.interceptors.request.use(async (config) => {
   try {
     const netInfo = await NetInfo.fetch();
-    
+
     if (!netInfo.isConnected) {
       throw new Error('No internet connection');
     }
-    
+
     // Add Firebase authentication headers to all requests
     const firebaseHeaders = await getFirebaseAuthHeaders();
-    
+
     // Create new Axios headers if they don't exist
     if (!config.headers) {
       config.headers = new AxiosHeaders();
     }
-    
+
     // Add Firebase headers
     Object.entries(firebaseHeaders).forEach(([key, value]) => {
       config.headers && config.headers.set(key, value);
     });
-    
+
     // Log the request details
     console.log('API Request:', {
       url: config.url,
       method: config.method,
       data: config.data,
-      headers: config.headers
+      headers: config.headers,
     });
-    
+
     // Don't add timestamp for cached GET requests to improve caching
     if (config.method?.toLowerCase() !== 'get') {
       // Add a timestamp to prevent caching issues for non-GET requests
@@ -78,7 +78,7 @@ API.interceptors.request.use(async (config) => {
       const separator = config.url?.includes('?') ? '&' : '?';
       config.url = `${config.url}${separator}_t=${timestamp}`;
     }
-    
+
     return config;
   } catch (error) {
     console.error('Request interceptor error:', error);
@@ -96,7 +96,7 @@ API.interceptors.response.use(
     console.log('API Response:', {
       status: response.status,
       data: response.data,
-      url: response.config.url
+      url: response.config.url,
     });
     return response;
   },
@@ -106,23 +106,23 @@ API.interceptors.response.use(
       config: {
         url: error.config?.url,
         method: error.config?.method,
-        data: error.config?.data
+        data: error.config?.data,
       },
       response: {
         status: error.response?.status,
-        data: error.response?.data
+        data: error.response?.data,
       },
-      message: error.message
+      message: error.message,
     });
 
     if (!error.response) {
       throw new Error('Network error - please check your internet connection');
     }
-    
+
     if (error.response.status === 401 || error.response.status === 403) {
       throw new Error('Authentication error - please sign in again');
     }
-    
+
     if (error.response.status === 400) {
       throw new Error(error.response.data?.message || 'Invalid request - please check your input');
     }
@@ -130,11 +130,11 @@ API.interceptors.response.use(
     if (error.response.status === 404) {
       throw new Error('Resource not found');
     }
-    
+
     if (error.response.status >= 500) {
       throw new Error('Server error - please try again later');
     }
-    
+
     return Promise.reject(error);
   }
 );

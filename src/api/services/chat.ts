@@ -16,22 +16,22 @@ export const sendMessage = async (characterId: string, message: string, conversa
     // Format conversation history to match API expectations
     const formattedConversation = conversation.map(msg => ({
       role: msg.isUser ? 'user' : 'assistant',
-      content: msg.text
+      content: msg.text,
     }));
 
     const chatRequest = {
       characterId,
       message: message.trim(),
-      conversation: formattedConversation
+      conversation: formattedConversation,
     };
 
     console.log('Sending chat request:', {
       ...chatRequest,
-      endpoint: '/ai/character/response'
+      endpoint: '/ai/character/response',
     });
-    
+
     const response = await API.post('/ai/character/response', chatRequest);
-    
+
     if (!response.data || typeof response.data.response !== 'string') {
       console.error('Invalid response format:', response.data);
       throw new Error('Invalid response format from server');
@@ -41,7 +41,7 @@ export const sendMessage = async (characterId: string, message: string, conversa
       id: Date.now().toString(),
       text: response.data.response,
       isUser: false,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   } catch (error: any) {
     // Log the error details
@@ -50,14 +50,14 @@ export const sendMessage = async (characterId: string, message: string, conversa
       response: error.response?.data,
       status: error.response?.status,
       characterId,
-      endpoint: '/ai/character/response'
+      endpoint: '/ai/character/response',
     });
-    
+
     // Enhance error message based on status code
     if (error.response?.status === 404) {
-      throw new Error(`Failed to send message: API endpoint not found. Please contact support.`);
+      throw new Error('Failed to send message: API endpoint not found. Please contact support.');
     }
-    
+
     throw error;
   }
 };
@@ -70,7 +70,7 @@ export const sendMessage = async (characterId: string, message: string, conversa
 //       message,
 //       conversation
 //     };
-//     
+//
 //     const response = await API.post('/ai/character/premium-response', chatRequest);
 //     return {
 //       id: Date.now().toString(),

@@ -5,13 +5,13 @@ import notifee, {
   EventDetail,
   AndroidColor,
   TimestampTrigger,
-  TriggerType
+  TriggerType,
 } from '@notifee/react-native';
-import messaging, { 
+import messaging, {
   FirebaseMessagingTypes,
   getMessaging,
   getToken,
-  onMessage
+  onMessage,
 } from '@react-native-firebase/messaging';
 import PermissionsService from './PermissionsService';
 import { InteractionManager } from 'react-native';
@@ -110,7 +110,7 @@ class NotificationService {
   // Handle notification events
   private async handleNotificationEvent(type: EventType, detail: EventDetail) {
     const notificationId = detail.notification?.id;
-    
+
     if (!notificationId || this.handledNotificationIds.has(notificationId)) {
       return;
     }
@@ -134,8 +134,8 @@ class NotificationService {
   // Create notification channel for Android asynchonously
   private async createDefaultChannelAsync() {
     this.enqueueOperation(async () => {
-      if (this.channelCreated) return;
-      
+      if (this.channelCreated) {return;}
+
       try {
         await this.createDefaultChannel();
       } catch (error) {
@@ -146,8 +146,8 @@ class NotificationService {
 
   // Create notification channel for Android
   public async createDefaultChannel() {
-    if (this.channelCreated) return;
-    
+    if (this.channelCreated) {return;}
+
     try {
       await notifee.createChannel({
         id: 'default',
@@ -161,9 +161,9 @@ class NotificationService {
         lights: true,
         lightColor: AndroidColor.RED,
         sound: 'default', // Use default sound
-        badge: true
+        badge: true,
       });
-      
+
       this.channelCreated = true;
       console.log('Notification channel created with sound and vibration');
     } catch (error) {
@@ -174,7 +174,7 @@ class NotificationService {
 
   // Display a basic notification
   public async displayNotification(
-    title: string, 
+    title: string,
     body: string,
     data?: Record<string, any>
   ) {
@@ -214,10 +214,10 @@ class NotificationService {
               autoCancel: true,
               smallIcon: 'ic_notification',
               color: '#EC4899',
-              ...androidConfig // Merge any custom Android settings
+              ...androidConfig, // Merge any custom Android settings
             },
           });
-          
+
           console.log('Notification displayed with ID:', notificationId);
           resolve(true);
         } catch (error) {
@@ -297,13 +297,13 @@ class NotificationService {
   // Check notification permissions with throttling to prevent frequent checks
   public async checkPermission(): Promise<boolean> {
     const now = Date.now();
-    
+
     // Use cached result if checked recently
     if (now - this.permissionLastChecked < this.PERMISSION_CHECK_INTERVAL) {
       const cachedResult = await this.permissionsService.checkNotificationPermission();
       return cachedResult;
     }
-    
+
     try {
       const result = await this.permissionsService.checkNotificationPermission();
       this.permissionLastChecked = now;
@@ -354,7 +354,7 @@ class NotificationService {
 
       // Update last checked time
       this.permissionLastChecked = Date.now();
-      
+
       return granted;
     } catch (error) {
       console.error('Error requesting notification permission:', error);

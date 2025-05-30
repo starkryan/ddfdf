@@ -28,7 +28,7 @@ class PermissionsService {
     if (Platform.OS !== 'android') {
       throw new Error('This permission service is only for Android');
     }
-    
+
     // For Android 13 (API 33) and above, we need POST_NOTIFICATIONS permission
     // For older versions, we use ACCESS_NOTIFICATION_POLICY
     return Number(Platform.Version) >= 33
@@ -47,13 +47,13 @@ class PermissionsService {
   private canRequestPermission(permission: Permission): boolean {
     const now = Date.now();
     const lastRequest = this.permissionRequestTimestamps[permission] || 0;
-    
+
     // Prevent request spam
     if (now - lastRequest < this.MIN_REQUEST_INTERVAL) {
       console.log(`Throttling permission request for ${permission}`);
       return false;
     }
-    
+
     return true;
   }
 
@@ -67,10 +67,10 @@ class PermissionsService {
         console.log('Notifications only supported on Android for this app');
         return false;
       }
-      
+
       const permission = this.getNotificationPermission();
       const result = await check(permission);
-      
+
       return result === RESULTS.GRANTED;
     } catch (error) {
       console.error('Error checking notification permission:', error);
@@ -95,17 +95,17 @@ class PermissionsService {
         console.log('Notifications only supported on Android for this app');
         return false;
       }
-      
+
       const permission = this.getNotificationPermission();
-      
+
       // Prevent rapid permission requests
       if (!this.canRequestPermission(permission)) {
         return false;
       }
-      
+
       // Update request timestamp
       this.updateRequestTimestamp(permission);
-      
+
       const result = await request(permission);
       return result === RESULTS.GRANTED;
     } catch (error) {
@@ -117,15 +117,15 @@ class PermissionsService {
   public async requestCameraPermission(): Promise<boolean> {
     try {
       const permission = this.getCameraPermission();
-      
+
       // Prevent rapid permission requests
       if (!this.canRequestPermission(permission)) {
         return false;
       }
-      
+
       // Update request timestamp
       this.updateRequestTimestamp(permission);
-      
+
       const result = await request(permission);
       return result === RESULTS.GRANTED;
     } catch (error) {
@@ -167,9 +167,9 @@ class PermissionsService {
       } else {
         throw new Error('Invalid permission type');
       }
-      
+
       const result = await check(permission);
-      
+
       return result === RESULTS.BLOCKED || result === RESULTS.DENIED;
     } catch (error) {
       console.error(`Error checking if ${permissionType} permission is blocked:`, error);
@@ -191,27 +191,27 @@ class PermissionsService {
           return {
             granted: false,
             blocked: false,
-            unavailable: true
+            unavailable: true,
           };
         }
         permission = this.getNotificationPermission();
       } else {
         throw new Error('Invalid permission type');
       }
-      
+
       const result = await check(permission);
-      
+
       return {
         granted: result === RESULTS.GRANTED,
         blocked: result === RESULTS.BLOCKED || result === RESULTS.DENIED,
-        unavailable: result === RESULTS.UNAVAILABLE
+        unavailable: result === RESULTS.UNAVAILABLE,
       };
     } catch (error) {
       console.error(`Error getting ${permissionType} permission details:`, error);
       return {
         granted: false,
         blocked: false,
-        unavailable: false
+        unavailable: false,
       };
     }
   }
@@ -221,48 +221,48 @@ class PermissionsService {
       if (Platform.OS !== 'android') {
         return {};
       }
-      
+
       const results = await checkMultiple(permissions);
       const formattedResults: { [key in Permission]?: boolean } = {};
-      
+
       (Object.keys(results) as Permission[]).forEach(key => {
         formattedResults[key] = results[key] === RESULTS.GRANTED;
       });
-      
+
       return formattedResults;
     } catch (error) {
       console.error('Error checking multiple permissions:', error);
       return {};
     }
   }
-  
+
   public async requestMultiplePermissions(permissions: Permission[]): Promise<{ [key in Permission]?: boolean }> {
     try {
       if (Platform.OS !== 'android') {
         return {};
       }
-      
+
       // Filter out permissions that were recently requested
       const filteredPermissions = permissions.filter(
         permission => this.canRequestPermission(permission)
       );
-      
+
       if (filteredPermissions.length === 0) {
         return {};
       }
-      
+
       // Update timestamps for all requested permissions
       filteredPermissions.forEach(permission => {
         this.updateRequestTimestamp(permission);
       });
-      
+
       const results = await requestMultiple(filteredPermissions);
       const formattedResults: { [key in Permission]?: boolean } = {};
-      
+
       (Object.keys(results) as Permission[]).forEach(key => {
         formattedResults[key] = results[key] === RESULTS.GRANTED;
       });
-      
+
       return formattedResults;
     } catch (error) {
       console.error('Error requesting multiple permissions:', error);

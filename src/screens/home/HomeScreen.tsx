@@ -72,13 +72,13 @@ const mockProfiles: Profile[] = [
 ];
 
 // Define types for grid items
-type GridItem = 
+type GridItem =
   | { type: 'profile'; data: Profile; id: string }
   | { type: 'nativeAd'; id: string }
   | { type: 'dummy'; id: string; data: Profile };
 
-const ProfileGrid = ({ profiles, onProfilePress, loading, onRefresh, selectedTab, setSelectedTab, tabs }: { 
-  profiles: Profile[]; 
+const ProfileGrid = ({ profiles, onProfilePress, loading, onRefresh, selectedTab, setSelectedTab, tabs }: {
+  profiles: Profile[];
   onProfilePress: (profile: Profile) => void;
   loading: boolean;
   onRefresh: () => void;
@@ -97,22 +97,22 @@ const ProfileGrid = ({ profiles, onProfilePress, loading, onRefresh, selectedTab
     const data: GridItem[] = [];
     profiles.forEach((profile, index) => {
       data.push({ type: 'profile', data: profile, id: profile.id });
-      
+
       // Show ad after every 6th profile for less intrusive experience
       if ((index + 1) % 6 === 0 && index > 0) {
-        data.push({ 
-          type: 'nativeAd', 
-          id: `native-ad-${Math.floor(index/6)}` 
+        data.push({
+          type: 'nativeAd',
+          id: `native-ad-${Math.floor(index / 6)}`,
         });
       }
     });
 
     // Ensure grid alignment with dummy items if needed
     if (data.length % 2 !== 0) {
-      data.push({ 
-        type: 'dummy', 
+      data.push({
+        type: 'dummy',
         id: 'dummy-spacer',
-        data: {} as Profile
+        data: {} as Profile,
       } as any);
     }
     return data;
@@ -121,7 +121,7 @@ const ProfileGrid = ({ profiles, onProfilePress, loading, onRefresh, selectedTab
   // Define the column wrapper style
   const columnWrapperStyle: ViewStyle = useMemo(() => ({
     justifyContent: 'space-between',
-    paddingHorizontal: 8
+    paddingHorizontal: 8,
   }), []);
 
   if (loading && profiles.length === 0) {
@@ -135,10 +135,10 @@ const ProfileGrid = ({ profiles, onProfilePress, loading, onRefresh, selectedTab
         // Handle different item types
         if (item.type === 'nativeAd') {
           return (
-            <View style={{ 
-              width: '100%', 
+            <View style={{
+              width: '100%',
               marginVertical: 16,
-              paddingHorizontal: 16
+              paddingHorizontal: 16,
             }}>
               <View style={{
                 width: '100%',
@@ -151,12 +151,12 @@ const ProfileGrid = ({ profiles, onProfilePress, loading, onRefresh, selectedTab
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.25,
                 shadowRadius: 3.84,
-                elevation: 5
+                elevation: 5,
               }}>
                 <Animated.View
                   entering={FadeInDown.duration(400).springify()}
                 >
-                  <NativeAdComponent 
+                  <NativeAdComponent
                     onAdLoaded={() => console.log('Native ad loaded in HomeScreen')}
                     onAdFailedToLoad={(error) => console.error('Native ad failed to load:', error)}
                   />
@@ -165,12 +165,12 @@ const ProfileGrid = ({ profiles, onProfilePress, loading, onRefresh, selectedTab
             </View>
           );
         }
-        
+
         // Skip rendering for dummy items
         if (item.type === 'dummy') {
           return <View style={{ width: (Platform.OS === 'ios' ? 0 : 0) }} />; // Use 0 width for dummy to not affect layout
         }
-        
+
         // Regular profile cards
         return (
           <ProfileCard profile={item.data} onPress={onProfilePress} index={index} />
@@ -179,12 +179,12 @@ const ProfileGrid = ({ profiles, onProfilePress, loading, onRefresh, selectedTab
       keyExtractor={(item) => item.id}
       numColumns={2}
       columnWrapperStyle={columnWrapperStyle}
-      contentContainerStyle={{ 
+      contentContainerStyle={{
         paddingHorizontal: 12,
         paddingBottom: Platform.OS === 'ios' ?
           insets.bottom + 120 :
           120 + Math.min(insets.bottom, 15),
-        paddingTop: 4
+        paddingTop: 4,
       }}
       ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
       showsVerticalScrollIndicator={false}
@@ -202,7 +202,7 @@ const ProfileGrid = ({ profiles, onProfilePress, loading, onRefresh, selectedTab
             setSelectedTab={setSelectedTab}
             tabs={tabs}
           />
-           
+
           {/* Banner ad below the tabs - small and unobtrusive */}
           {Platform.OS === 'android' && (
             <BannerAdComponent
@@ -241,21 +241,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, triggerIncom
       const data = await getCharacters();
       const withNewFlag = data.map((char: Profile, index: number) => ({
         ...char,
-        isNew: index < 2
+        isNew: index < 2,
       }));
       setCharacters(withNewFlag);
       setLoading(false);
     } catch (error) {
       console.error('Failed to fetch characters:', error);
       setLoading(false);
-      toast.error("Network Error");
+      toast.error('Network Error');
       setCharacters(mockProfiles.map((profile, index) => ({
         ...profile,
-        isNew: index < 2
+        isNew: index < 2,
       })));
     }
   }, []);
-  
+
   useEffect(() => {
     fetchCharacters();
   }, [fetchCharacters]);
@@ -304,21 +304,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, triggerIncom
         barStyle="light-content"
         translucent
       />
-      
+
       <SafeAreaView className="flex-1" edges={['top']}>
         {/* Modern Header */}
         <View className="px-4 py-4">
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center space-x-2">
-              <Image 
-                source={require('../../../assets/logo.png')} 
+              <Image
+                source={require('../../../assets/logo.png')}
                 style={{ width: 120, height: 40 }}
                 resizeMode="contain"
               />
             </View>
             <View className="flex-row items-center space-x-3">
-              <TouchableOpacity 
-                onPress={() => navigation.navigate('Search')} 
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Search')}
                 className="bg-white/10 backdrop-blur-xl border border-white/20 p-3 rounded-2xl"
               >
                 <Icon name="search" size={18} color="#fff" />
@@ -327,8 +327,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, triggerIncom
           </View>
         </View>
 
-        <ProfileGrid 
-          profiles={memoizedTabs[selectedTab].data} 
+        <ProfileGrid
+          profiles={memoizedTabs[selectedTab].data}
           onProfilePress={handleProfilePress}
           loading={loading}
           onRefresh={fetchCharacters}
@@ -336,8 +336,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, triggerIncom
           setSelectedTab={setSelectedTab}
           tabs={memoizedTabs}
         />
-        
-       
+
+
       </SafeAreaView>
     </View>
   );

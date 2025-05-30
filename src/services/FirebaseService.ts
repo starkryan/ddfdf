@@ -9,7 +9,7 @@ export const signInAnonymously = async (): Promise<string> => {
   try {
     const auth = getAuth(getApp());
     const { user } = await firebaseSignInAnonymously(auth);
-    if (!user) throw new Error('Failed to create anonymous user');
+    if (!user) {throw new Error('Failed to create anonymous user');}
     return user.uid;
   } catch (error) {
     console.error('Anonymous sign-in error:', error);
@@ -42,4 +42,4 @@ export const signOut = async (): Promise<void> => {
     console.error('Sign out error:', error);
     throw error;
   }
-}; 
+};

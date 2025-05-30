@@ -10,7 +10,7 @@ import { toast } from 'sonner-native';
 import NotificationService from '../../services/NotificationService';
 import { check, request, RESULTS, openSettings, Permission } from 'react-native-permissions';
 import messaging, {
-  getToken
+  getToken,
 } from '@react-native-firebase/messaging';
 import { TabScreenProps } from '../../navigation/types';
 import { resetRoot } from '../../utils/navigationService';
@@ -37,7 +37,7 @@ const SettingItem = ({
   title,
   onPress,
   rightElement,
-  description
+  description,
 }: {
   icon: string;
   title: string;
@@ -76,7 +76,7 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
   const messagingInstance = messaging();
   const coins = useCoinStore(state => state.coins);
   const { isPremium, loading: premiumLoading } = usePremium();
-  
+
 
   // Initialize interstitial ad
   const { isLoaded, load, show } = useInterstitialAd();
@@ -90,7 +90,7 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
         }
       } catch (error) {
         console.error('Error loading user info:', error);
-        toast.error("Error loading user info");
+        toast.error('Error loading user info');
       }
     };
     loadUserInfo();
@@ -139,11 +139,11 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
 
       // Show toast after a delay to not interfere with navigation
       setTimeout(() => {
-        toast.success("User logged out successfully");
+        toast.success('User logged out successfully');
       }, 500);
     } catch (error) {
       console.error('Error during logout:', error);
-      toast.error("Error during logout");
+      toast.error('Error during logout');
     }
   };
 
@@ -156,17 +156,17 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
     try {
       await updateProfile({
         name: editName,
-        avatar: userProfile?.avatar || DEFAULT_AVATAR
+        avatar: userProfile?.avatar || DEFAULT_AVATAR,
       });
       setShowEditModal(false);
-      toast.success("Profile updated successfully");
+      toast.success('Profile updated successfully');
     } catch (error) {
       console.error('Error updating profile:', error);
-      toast.error("Error updating profile");
+      toast.error('Error updating profile');
     }
   };
 
- 
+
 
   const handleNotificationToggle = async () => {
     try {
@@ -180,12 +180,12 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
           [
             {
               text: 'Cancel',
-              style: 'cancel'
+              style: 'cancel',
             },
             {
               text: 'Open Settings',
-              onPress: () => openSettings()
-            }
+              onPress: () => openSettings(),
+            },
           ]
         );
         return;
@@ -212,12 +212,12 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
           [
             {
               text: 'Cancel',
-              style: 'cancel'
+              style: 'cancel',
             },
             {
               text: 'Open Settings',
-              onPress: () => openSettings()
-            }
+              onPress: () => openSettings(),
+            },
           ]
         );
       }
@@ -273,7 +273,7 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
             paddingTop: 12,
             paddingBottom: Platform.OS === 'ios' ?
               100 + Math.min(insets.bottom, 20) :
-              120 + Math.min(insets.bottom, 15)
+              120 + Math.min(insets.bottom, 15),
           }}
           showsVerticalScrollIndicator={true}
           indicatorStyle="white"
@@ -314,18 +314,18 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
             <Text className="text-white/90 text-lg font-semibold mb-4 px-1">
               Settings
             </Text>
-            <SettingItem 
-              icon="account-edit" 
-              title="Edit Profile" 
+            <SettingItem
+              icon="account-edit"
+              title="Edit Profile"
               onPress={handleEditProfile}
-              description="Update your name and profile picture" 
+              description="Update your name and profile picture"
             />
 
             {isPremium ? (
-              <SettingItem 
-                icon="crown" 
-                title="Premium Active" 
-                description="You have an active premium subscription" 
+              <SettingItem
+                icon="crown"
+                title="Premium Active"
+                description="You have an active premium subscription"
                 rightElement={
                   <View className="bg-yellow-500 px-2 py-1 rounded-md">
                     <Text className="text-white text-xs font-bold">ACTIVE</Text>
@@ -333,18 +333,18 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
                 }
               />
             ) : (
-              <SettingItem 
-                icon="crown" 
-                title="Premium" 
+              <SettingItem
+                icon="crown"
+                title="Premium"
                 onPress={() => navigation.navigate('Premium', {})}
-                description="Upgrade to premium for ad-free experience" 
+                description="Upgrade to premium for ad-free experience"
               />
             )}
-            <SettingItem 
-              icon="credit-card" 
-              title="Make a Payment" 
+            <SettingItem
+              icon="credit-card"
+              title="Make a Payment"
               onPress={() => navigation.navigate('Payment', { amount: 0, coins: 0 })}
-              description="Access payment options" 
+              description="Access payment options"
             />
 
             <SettingItem
@@ -361,17 +361,17 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
                 />
               }
             />
-            <SettingItem 
-              icon="shield-check" 
-              title="Privacy" 
+            <SettingItem
+              icon="shield-check"
+              title="Privacy"
               onPress={handlePrivacyPress}
-              description="Review our data practices and policies" 
+              description="Review our data practices and policies"
             />
-            <SettingItem 
-              icon="help-circle" 
-              title="Help & Support" 
+            <SettingItem
+              icon="help-circle"
+              title="Help & Support"
               onPress={handleHelpSupport}
-              description="Get assistance and contact support" 
+              description="Get assistance and contact support"
             />
           </View>
 

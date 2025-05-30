@@ -54,9 +54,9 @@ export const sendMessageToCharacter = async (chatRequest: ChatRequest) => {
     const response = await API.post('/ai/character/response', chatRequest);
     return response.data;
   } catch (error: any) {
-    console.error('Error sending message to character:', { 
+    console.error('Error sending message to character:', {
       characterId: chatRequest.characterId,
-      error 
+      error,
     });
     throw error;
   }

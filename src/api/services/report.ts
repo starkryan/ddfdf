@@ -30,30 +30,30 @@ export const reportMessage = async (reportData: ReportRequest): Promise<ReportRe
   try {
     // Get the current Firebase user (anonymous or signed in)
     const currentUser = auth().currentUser;
-    
+
     // Add Firebase authentication headers
     const headers: Record<string, string> = {};
-    
+
     if (currentUser) {
       // For anonymous users, pass the UID as firebase-id
       headers['firebase-id'] = currentUser.uid;
-      
+
       // If user is not anonymous, also get the token
       if (!currentUser.isAnonymous) {
         const token = await currentUser.getIdToken();
         headers['firebase-token'] = token;
       }
     }
-    
+
     const response = await apiClient.post('/reports', reportData, { headers });
     return response.data;
   } catch (error: any) {
     console.error('Error reporting message:', error);
-    
+
     if (error.response) {
       throw new Error(error.response.data.message || 'Failed to submit report');
     }
-    
+
     throw new Error('Network error - please check your connection and try again');
   }
 };
@@ -67,21 +67,21 @@ export const getReportStatus = async (reportId: string): Promise<any> => {
   try {
     // Get the current Firebase user (anonymous or signed in)
     const currentUser = auth().currentUser;
-    
+
     // Add Firebase authentication headers
     const headers: Record<string, string> = {};
-    
+
     if (currentUser) {
       // For anonymous users, pass the UID as firebase-id
       headers['firebase-id'] = currentUser.uid;
-      
+
       // If user is not anonymous, also get the token
       if (!currentUser.isAnonymous) {
         const token = await currentUser.getIdToken();
         headers['firebase-token'] = token;
       }
     }
-    
+
     const response = await apiClient.get(`/reports/${reportId}/status`, { headers });
     return response.data;
   } catch (error: any) {
@@ -92,5 +92,5 @@ export const getReportStatus = async (reportId: string): Promise<any> => {
 
 export default {
   reportMessage,
-  getReportStatus
-}; 
+  getReportStatus,
+};

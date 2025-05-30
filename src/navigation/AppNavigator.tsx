@@ -31,11 +31,11 @@ export const AppNavigator = ({ triggerIncomingCall }: AppNavigatorProps) => {
       }}
       initialRouteName={isAuthenticated ? 'Tabs' : 'Onboarding'}
     >
-      
+
       {/* Common screens - available in both authenticated and unauthenticated states */}
-      <Stack.Screen name="Onboarding" component={OnboardingScreen} />      
+      <Stack.Screen name="Onboarding" component={OnboardingScreen} />
       <Stack.Screen name="Premium" component={PremiumScreen} />
-      
+
       {!isAuthenticated ? (
         <>
         </>

@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../hooks/authContext';
 import { MotiView } from 'moti';
 
-import { toast } from "sonner-native"
+import { toast } from 'sonner-native';
 import Svg, { Path } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -22,8 +22,8 @@ export const OnboardingScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState<OnboardingStep>(OnboardingStep.USER_ENTRY);
   const insets = useSafeAreaInsets(); // Get safe area insets
-  
-  
+
+
   // Reference to track mounting state
   const isMountedRef = React.useRef(false);
 
@@ -34,7 +34,7 @@ export const OnboardingScreen = () => {
   // Run once on mount only
   React.useEffect(() => {
     isMountedRef.current = true;
-    
+
     if (isMountedRef.current) {
       Animated.parallel([
         Animated.timing(fadeAnim, {
@@ -46,7 +46,7 @@ export const OnboardingScreen = () => {
           toValue: 0,
           duration: 1000,
           useNativeDriver: true,
-        })
+        }),
       ]).start();
     }
 
@@ -60,8 +60,8 @@ export const OnboardingScreen = () => {
 
   // New animation effect for step changes only
   React.useEffect(() => {
-    if (!isMountedRef.current) return;
-    
+    if (!isMountedRef.current) {return;}
+
     // Only animate when changing steps
     Animated.sequence([
       Animated.timing(fadeAnim, {
@@ -73,20 +73,20 @@ export const OnboardingScreen = () => {
         toValue: 1,
         duration: 500,
         useNativeDriver: true,
-      })
+      }),
     ]).start();
   }, [currentStep]);
 
   const handleCompleteOnboarding = async () => {
-    if (isLoading) return; // Prevent multiple attempts
-    
+    if (isLoading) {return;} // Prevent multiple attempts
+
     try {
       setIsLoading(true);
-      
+
       // Login and mark onboarding as completed
       await login();
       await AsyncStorage.setItem('hasCompletedOnboarding', 'true');
-      
+
       // Navigate to the Home screen after successful onboarding
       navigation.navigate('Tabs', { screen: 'HomeTab' });
     } catch (error) {
@@ -110,9 +110,9 @@ export const OnboardingScreen = () => {
       transition={{ type: 'timing', duration: 800 }}
       className="flex-1 justify-end items-center px-6 pb-16"
     >
-      
 
-     
+
+
 
       <MotiView
         from={{ translateY: 30, opacity: 0 }}
@@ -155,9 +155,7 @@ export const OnboardingScreen = () => {
           position: 'absolute',
           bottom: 10 + insets.bottom,
         }}
-      >
-       
-      </MotiView>
+       />
     </MotiView>
   );
 
@@ -190,13 +188,13 @@ export const OnboardingScreen = () => {
           paddingTop: insets.top,
           paddingBottom: insets.bottom,
           paddingLeft: insets.left,
-          paddingRight: insets.right
+          paddingRight: insets.right,
         }}>
           <Animated.View
             style={{
               flex: 1,
               opacity: fadeAnim,
-              transform: [{ translateY: translateY }]
+              transform: [{ translateY: translateY }],
             }}
           >
             {renderContent()}
