@@ -9,6 +9,7 @@ import { RootStackParamList } from './types';
 import SearchScreen from '../screens/search/SearchScreen';
 import PremiumScreen from '../screens/subscription/PremiumScreen';
 import VideoCallScreen from '../screens/chat/VideoCallScreen'; // Import VideoCallScreen
+import PaymentScreen from '../screens/payment/PaymentScreen'; // Import PaymentScreen
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 interface AppNavigatorProps {
@@ -47,6 +48,7 @@ export const AppNavigator = ({ triggerIncomingCall }: AppNavigatorProps) => {
           <Stack.Screen name="Chat" component={ChatScreen} />
           <Stack.Screen name="Search" component={SearchScreen} />
           <Stack.Screen name="VideoCallScreen" component={VideoCallScreen} />
+          <Stack.Screen name="Payment" component={PaymentScreen} />
         </>
       )}
     </Stack.Navigator>

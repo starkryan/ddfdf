@@ -340,6 +340,12 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
                 description="Upgrade to premium for ad-free experience" 
               />
             )}
+            <SettingItem 
+              icon="credit-card" 
+              title="Make a Payment" 
+              onPress={() => navigation.navigate('Payment')}
+              description="Access payment options" 
+            />
 
             <SettingItem
               icon="bell-outline"
@@ -520,4 +526,4 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
       </Modal>
     </View>
   );
-}; 
+};

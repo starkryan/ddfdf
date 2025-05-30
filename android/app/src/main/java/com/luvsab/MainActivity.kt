@@ -15,11 +15,6 @@ class MainActivity : ReactActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     // Enable edge-to-edge display
     WindowCompat.setDecorFitsSystemWindows(window, false)
-    WindowInsetsControllerCompat(window, window.decorView).let { controller ->
-        controller.hide(WindowInsetsCompat.Type.systemBars())
-        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-    }
-
     // Hide the Android splash screen early to allow our custom splash screen to appear
     // Note: we're calling this before super.onCreate()
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {

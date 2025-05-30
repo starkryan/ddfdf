@@ -38,6 +38,7 @@ export type RootStackParamList = {
     callerName: string;
     callerImage?: string;
   };
+  Payment: undefined; // Add PaymentScreen to the RootStackParamList
 };
 
 // Screen props types

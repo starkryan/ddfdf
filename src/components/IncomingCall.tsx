@@ -84,31 +84,35 @@ const IncomingCall: React.FC<IncomingCallProps> = ({ videoUrls, callerName, call
       style={styles.fullscreenContainer}
       resizeMode="cover"
     >
-      {/* Overlay for better text readability */}
+      {/* Overlay for better text readability, less opaque */}
       <View style={styles.overlay} />
 
-      <View className="flex-1 justify-center items-center w-full px-4">
-        <Image
-          source={callerImage ? { uri: callerImage } : require('../../assets/avatar.png')}
-          className="w-32 h-32 rounded-full mb-5 border-2 border-white"
-        />
-        <Text className="text-white text-3xl font-bold mb-2 text-center">{callerName || 'Unknown Caller'}</Text>
-        <Text className="text-gray-400 text-lg mb-12 text-center">Incoming Call</Text>
+      <View className="flex-1 w-full justify-between items-center p-8">
+        {/* Top section for caller info - centered */}
+        <View className="w-full items-center mt-16">
+          {/* <Image
+            source={callerImage ? { uri: callerImage } : require('../../assets/avatar.png')}
+            className="w-32 h-32 rounded-full mb-4 border-4 border-pink-500 shadow-lg"
+          /> */}
+          <Text className="text-white text-4xl font-extrabold mb-1 tracking-wide">{callerName || 'Unknown Caller'}</Text>
+          <Text className="text-gray-200 text-xl font-medium">Incoming Call</Text>
+        </View>
 
-        <View className="flex-row justify-around w-full px-4">
-          <TouchableOpacity className="flex-1 p-3 rounded-full bg-red-600 items-center justify-center mx-2" onPress={handleDeclineCall}>
-            <View className="items-center">
-              <Icon name="phone-hangup" size={24} color="white" />
-              <Text className="text-white text-base font-bold mt-1">Decline</Text>
-            </View>
-          </TouchableOpacity>
-          <Animated.View style={{ transform: [{ scale: acceptButtonScale }], flex: 1, marginHorizontal: 8 }}>
-            <TouchableOpacity className="p-3 rounded-full bg-green-600 items-center justify-center" onPress={handleAcceptCall}>
-              <View className="items-center">
-                <Icon name="phone" size={24} color="white" />
-                <Text className="text-white text-base font-bold mt-1">Accept</Text>
-              </View>
+        {/* Bottom section for call action buttons - centered at bottom */}
+        <View className="flex-row justify-center w-full px-4 mb-16 gap-x-24">
+          <View className="items-center">
+            <TouchableOpacity className="w-20 h-20 rounded-full bg-red-500 items-center justify-center shadow-lg" onPress={handleDeclineCall}>
+              <Icon name="phone-hangup" size={30} color="white" />
             </TouchableOpacity>
+            <Text className="text-white text-sm font-semibold mt-2">Decline</Text>
+          </View>
+          <Animated.View style={{ transform: [{ scale: acceptButtonScale }] }}>
+            <View className="items-center">
+              <TouchableOpacity className="w-20 h-20 rounded-full bg-green-500 items-center justify-center shadow-lg" onPress={handleAcceptCall}>
+                <Icon name="phone" size={30} color="white" />
+              </TouchableOpacity>
+              <Text className="text-white text-sm font-semibold mt-2">Accept</Text>
+            </View>
           </Animated.View>
         </View>
       </View>
@@ -129,7 +133,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.5)', // Semi-transparent black overlay
+    backgroundColor: 'rgba(0,0,0,0.4)', // Less opaque overlay for more visible background
   },
 });
 

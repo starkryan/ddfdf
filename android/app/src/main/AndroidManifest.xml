@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
@@ -21,13 +22,27 @@
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
       android:theme="@style/AppTheme"
-      android:supportsRtl="true">
+      android:supportsRtl="true"
+      tools:replace="android:theme">
       
       <!-- Add this meta-data for AdMob -->
       <meta-data
           android:name="com.google.android.gms.ads.APPLICATION_ID"
           android:value="${admob_app_id}"
           tools:replace="android:value"/>
+
+      <!-- PayU Merchant Key and Salt -->
+      <meta-data
+          android:name="payu_merchant_key"
+          android:value="3LySeo" />
+      <meta-data
+          android:name="payu_salt"
+          android:value="qzDFCG4c3ocV6m8Z0GbazBsvfqvIXlZO" />
+
+      <!-- PayU Test Environment Metadata for UPI Collect Flow -->
+      <meta-data android:name="payu_debug_mode_enabled" android:value="true" />
+      <meta-data android:name="payu_web_service_url" android:value="https://test.payu.in" />
+      <meta-data android:name="payu_post_url" android:value="https://test.payu.in"/>
           
       <activity
           android:name="com.google.android.gms.ads.AdActivity"
@@ -48,4 +63,77 @@
         </intent-filter>
       </activity>
     </application>
+
+    <!-- Required for Android 11 (API 30) and above to query and interact with UPI apps -->
+    <queries>
+        <package android:name="com.google.android.apps.nbu.paisa.user" /> <!-- Google Pay -->
+        <package android:name="com.phonepe.app" /> <!-- PhonePe -->
+        <package android:name="net.one97.paytm" /> <!-- Paytm -->
+        <package android:name="in.org.npci.upiapp" /> <!-- BHIM UPI -->
+        <package android:name="com.myairtelapp" /> <!-- Airtel Thanks -->
+        <package android:name="com.mobikwik_new" /> <!-- Mobikwik -->
+        <package android:name="com.sbi.upi" /> <!-- SBI Pay -->
+        <package android:name="com.icicibank.pockets" /> <!-- ICICI Pockets -->
+        <package android:name="com.axisbank.mobile" /> <!-- Axis Mobile -->
+        <package android:name="com.freecharge.android" /> <!-- Freecharge -->
+        <package android:name="com.amazon.mobile.android.pay" /> <!-- Amazon Pay -->
+        <package android:name="com.indusind.induspay" /> <!-- IndusInd Bank -->
+        <package android:name="com.fss.pnbpsp" /> <!-- PNB UPI -->
+        <package android:name="com.unionbank.upi" /> <!-- Union Bank UPI -->
+        <package android:name="com.bankofbaroda.mpay" /> <!-- Baroda MPay -->
+        <package android:name="com.upi.axispay" /> <!-- Axis Pay -->
+        <package android:name="com.snapdeal.payments" /> <!-- Freecharge -->
+        <package android:name="com.olacabs.ola" /> <!-- Ola Money -->
+        <package android:name="com.whatsapp" /> <!-- WhatsApp Pay -->
+        <package android:name="com.truecaller" /> <!-- Truecaller Pay -->
+        <package android:name="com.cred.app" /> <!-- CRED Pay -->
+        <package android:name="com.bharatpe.app" /> <!-- BharatPe -->
+        <package android:name="com.bankofindia.boiupi" /> <!-- Bank of India UPI -->
+        <package android:name="com.canarabank.upi" /> <!-- Canara Bank UPI -->
+        <package android:name="com.federalbank.fedmobile" /> <!-- Federal Bank UPI -->
+        <package android:name="com.hdfcbank.mobilebanking" /> <!-- HDFC Bank MobileBanking -->
+        <package android:name="com.idfcfirstbank.mobile" /> <!-- IDFC FIRST Bank Mobile -->
+        <package android:name="com.kotak.bank.activities" /> <!-- Kotak Mobile Banking -->
+        <package android:name="com.rblbank.rblmobilebanking" /> <!-- RBL Bank MoBank -->
+        <package android:name="com.yesbank.yespay" /> <!-- YES Bank UPI -->
+        <package android:name="com.airtel.money" /> <!-- Airtel Money -->
+        <package android:name="com.jio.myjio" /> <!-- MyJio -->
+        <package android:name="com.payzapp.android" /> <!-- PayZapp -->
+        <package android:name="com.bhim.sbi.upi" /> <!-- SBI BHIM UPI -->
+        <package android:name="com.bankofmaharashtra.mobilebanking" /> <!-- Bank of Maharashtra Mobile Banking -->
+        <package android:name="com.centralbank.mobilebanking" /> <!-- Central Bank of India Mobile Banking -->
+        <package android:name="com.indianbank.indpay" /> <!-- Indian Bank IndPay -->
+        <package android:name="com.southindianbank.sibmirror" /> <!-- South Indian Bank SIB Mirror+ -->
+        <package android:name="com.uco.bank.mobilebanking" /> <!-- UCO Bank Mobile Banking -->
+        <package android:name="com.vijayabank.mobilebanking" /> <!-- Vijaya Bank Mobile Banking -->
+        <package android:name="com.bankofbaroda.barodaconnect" /> <!-- Baroda Connect -->
+        <package android:name="com.dbs.in.digibank" /> <!-- digibank by DBS -->
+        <package android:name="com.hsbc.hsbcmobilebanking" /> <!-- HSBC Mobile Banking -->
+        <package android:name="com.standardchartered.mobilebanking" /> <!-- Standard Chartered Mobile Banking -->
+        <package android:name="com.yesbank.yesmobile" /> <!-- YES Mobile -->
+        <package android:name="com.axisbank.axismobile" /> <!-- Axis Mobile -->
+        <package android:name="com.bankofindia.mobilebanking" /> <!-- Bank of India Mobile Banking -->
+        <package android:name="com.canarabank.mobilebanking" /> <!-- Canara Bank Mobile Banking -->
+        <package android:name="com.federalbank.mobilebanking" /> <!-- Federal Bank Mobile Banking -->
+        <package android:name="com.hdfcbank.mobilebanking" /> <!-- HDFC Bank MobileBanking -->
+        <package android:name="com.idfcfirstbank.mobile" /> <!-- IDFC FIRST Bank Mobile -->
+        <package android:name="com.kotak.bank.activities" /> <!-- Kotak Mobile Banking -->
+        <package android:name="com.rblbank.rblmobilebanking" /> <!-- RBL Bank MoBank -->
+        <package android:name="com.yesbank.yespay" /> <!-- YES Bank UPI -->
+        <package android:name="com.airtel.money" /> <!-- Airtel Money -->
+        <package android:name="com.jio.myjio" /> <!-- MyJio -->
+        <package android:name="com.payzapp.android" /> <!-- PayZapp -->
+        <package android:name="com.bhim.sbi.upi" /> <!-- SBI BHIM UPI -->
+        <package android:name="com.bankofmaharashtra.mobilebanking" /> <!-- Bank of Maharashtra Mobile Banking -->
+        <package android:name="com.centralbank.mobilebanking" /> <!-- Central Bank of India Mobile Banking -->
+        <package android:name="com.indianbank.indpay" /> <!-- Indian Bank IndPay -->
+        <package android:name="com.southindianbank.sibmirror" /> <!-- South Indian Bank SIB Mirror+ -->
+        <package android:name="com.uco.bank.mobilebanking" /> <!-- UCO Bank Mobile Banking -->
+        <package android:name="com.vijayabank.mobilebanking" /> <!-- Vijaya Bank Mobile Banking -->
+        <package android:name="com.bankofbaroda.barodaconnect" /> <!-- Baroda Connect -->
+        <package android:name="com.dbs.in.digibank" /> <!-- digibank by DBS -->
+        <package android:name="com.hsbc.hsbcmobilebanking" /> <!-- HSBC Mobile Banking -->
+        <package android:name="com.standardchartered.mobilebanking" /> <!-- Standard Chartered Mobile Banking -->
+        <package android:name="com.yesbank.yesmobile" /> <!-- YES Mobile -->
+    </queries>
 </manifest>
