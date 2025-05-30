@@ -1,9 +1,10 @@
-import { Alert, Button, NativeEventEmitter, PermissionsAndroid, StyleSheet, Text, View, NativeModules, ActivityIndicator } from 'react-native';
+import { NativeEventEmitter, PermissionsAndroid, StyleSheet, Text, View, NativeModules, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import PayUBizSdk from 'payu-non-seam-less-react';
 import { sha512 } from 'js-sha512';
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigation/types';
+import { toast } from 'sonner-native'; // Import toast
 
 type PaymentScreenRouteProp = RouteProp<RootStackParamList, 'Payment'>;
 
@@ -114,14 +115,10 @@ const PaymentScreen = () => {
       console.warn(err);
     }
   };
-  const displayAlert = (title: string, value: string) => {
-    Alert.alert(title, value);
-
-  };
   const onPaymentSuccess = (e: any) => {
     console.log(e.merchantResponse);
      console.log(e.payuResponse);
-     displayAlert('onPaymentSuccess', 'Payment success');
+     toast.success('Payment Success', { description: 'Your diamond purchase was successful!' });
      // Navigate back to VideoCallScreen or ChatScreen on success
      navigation.goBack(); // Or navigate to a specific success screen
    };
@@ -129,20 +126,20 @@ const PaymentScreen = () => {
    const onPaymentFailure = (e: any) => {
     console.log(e.merchantResponse);
     console.log(e.payuResponse);
-    displayAlert('onPaymentFailure', JSON.stringify(e));
+    toast.error('Payment Failed', { description: 'There was an issue with your payment. Please try again.' });
     navigation.goBack(); // Go back on failure
   };
 
 
   const onPaymentCancel = (e: any) => {
     console.log('onPaymentCancel isTxnInitiated -' + e);
-    displayAlert('onPaymentCancel', JSON.stringify(e));
+    toast.info('Payment Cancelled', { description: 'You cancelled the payment process.' });
     navigation.goBack(); // Go back on cancel
   };
 
   const onError = (e: any) => {
- displayAlert('onError', JSON.stringify(e));
- navigation.goBack(); // Go back on error
+    toast.error('Payment Error', { description: 'An unexpected error occurred during payment.' });
+    navigation.goBack(); // Go back on error
   };
 
 

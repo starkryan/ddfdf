@@ -19,6 +19,7 @@ import { useInterstitialAd } from '../../hooks/useAdMob';
 import BannerAdComponent from '../../components/ads/BannerAdComponent';
 import { BannerAdSize } from 'react-native-google-mobile-ads';
 import { usePremium } from '../../hooks/usePremium';
+import DiamondPurchaseModal from '../../components/DiamondPurchaseModal'; // Import DiamondPurchaseModal
 
 const DEFAULT_AVATAR = require('../../../assets/avatar.png');
 const coinImage = require('../../../assets/coin.png');
@@ -69,6 +70,7 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
   const { logout, userProfile, updateProfile } = useAuth();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDiamondPurchaseModal, setShowDiamondPurchaseModal] = useState(false); // New state for diamond modal
   const [editName, setEditName] = useState('');
   const notificationService = NotificationService.getInstance();
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
@@ -307,6 +309,13 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
               </View>
               <Text className="text-yellow-400 font-bold text-xl">{coins}</Text>
             </View>
+            <TouchableOpacity
+              onPress={() => setShowDiamondPurchaseModal(true)}
+              className="mt-4 bg-pink-500 rounded-xl py-3 flex-row items-center justify-center"
+            >
+              <Icon name="diamond-stone" size={20} color="#fff" />
+              <Text className="text-white font-semibold ml-2 text-base">Buy Diamonds</Text>
+            </TouchableOpacity>
           </View>
 
           {/* Settings */}
@@ -314,38 +323,7 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
             <Text className="text-white/90 text-lg font-semibold mb-4 px-1">
               Settings
             </Text>
-            <SettingItem
-              icon="account-edit"
-              title="Edit Profile"
-              onPress={handleEditProfile}
-              description="Update your name and profile picture"
-            />
 
-            {isPremium ? (
-              <SettingItem
-                icon="crown"
-                title="Premium Active"
-                description="You have an active premium subscription"
-                rightElement={
-                  <View className="bg-yellow-500 px-2 py-1 rounded-md">
-                    <Text className="text-white text-xs font-bold">ACTIVE</Text>
-                  </View>
-                }
-              />
-            ) : (
-              <SettingItem
-                icon="crown"
-                title="Premium"
-                onPress={() => navigation.navigate('Premium', {})}
-                description="Upgrade to premium for ad-free experience"
-              />
-            )}
-            <SettingItem
-              icon="credit-card"
-              title="Make a Payment"
-              onPress={() => navigation.navigate('Payment', { amount: 0, coins: 0 })}
-              description="Access payment options"
-            />
 
             <SettingItem
               icon="bell-outline"
@@ -524,6 +502,16 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
           </View>
         </Animated.View>
       </Modal>
+
+      {/* Diamond Purchase Modal */}
+      <DiamondPurchaseModal
+        isVisible={showDiamondPurchaseModal}
+        onClose={() => setShowDiamondPurchaseModal(false)}
+        onPurchase={(amount, coins) => {
+          // Handle purchase logic if needed, though navigation to Payment screen handles it
+          console.log(`Attempting to purchase ${coins} coins for ${amount}`);
+        }}
+      />
     </View>
   );
 };

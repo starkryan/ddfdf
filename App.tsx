@@ -96,10 +96,10 @@ const MyTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    background: '#111827',
-    card: '#1F2937',
-    text: '#FFFFFF',
-    border: 'transparent',
+    background: '#FFFFFF', // White background
+    card: '#F9FAFB', // Light gray for cards
+    text: '#1F2937', // Dark text
+    border: '#E5E7EB', // Light border
   },
 };
 

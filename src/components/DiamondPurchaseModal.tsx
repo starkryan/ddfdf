@@ -89,7 +89,7 @@ const DiamondPurchaseModal: React.FC<DiamondPurchaseModalProps> = ({ isVisible, 
                 ]}
                 onPress={() => handleNavigateToPayment(pack.amount, pack.coins)}
               >
-                <Icon name="diamond-stone" size={30} color={pack.tag === 'Best Value' ? '#FFD700' : '#00BFFF'} />
+                <Icon name="diamond-stone" size={30} color={pack.tag === 'Best Value' ? '#FF69B4' : '#FF1493'} />
                 <View style={styles.packageDetails}>
                   <Text style={styles.packageCoins}>{pack.label}</Text>
                   <Text style={styles.packagePrice}>{pack.price}</Text>
