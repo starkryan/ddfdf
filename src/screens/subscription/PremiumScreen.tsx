@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Purchases, { PurchasesPackage } from 'react-native-purchases';
 import RevenueCatService from '../../services/RevenueCatService';
-import Toast from 'toastify-react-native';
+import { toast } from 'sonner-native'; // Changed import
 import { useAuth } from '../../hooks/authContext';
 
 // Import background image
@@ -79,7 +79,7 @@ const PremiumScreen: React.FC<PremiumScreenProps> = ({ navigation, route }) => {
         }
       } catch (error) {
         console.error('Error loading offerings:', error);
-        Toast.error('Failed to load subscription options');
+        toast.error('Failed to load subscription options'); // Replaced Toast.error
       } finally {
         setLoading(false);
       }
@@ -102,7 +102,7 @@ const PremiumScreen: React.FC<PremiumScreenProps> = ({ navigation, route }) => {
       const customerInfo = await revenueCatService.purchasePackage(selectedPackage);
       
       if (customerInfo) {
-        Toast.success('Subscription activated!');
+        toast.success('Subscription activated!'); // Replaced Toast.success
         
         // If this was during onboarding, continue to main app
         if (isFromOnboarding) {
@@ -116,12 +116,12 @@ const PremiumScreen: React.FC<PremiumScreenProps> = ({ navigation, route }) => {
         }
       } else {
         // User may have cancelled purchase
-        Toast.info('Purchase was not completed');
+        toast('Purchase was not completed'); // Replaced Toast.info
       }
     } catch (error: any) {
       if (!error.userCancelled) {
         console.error('Purchase error:', error);
-        Toast.error('Purchase failed. Please try again.');
+        toast.error('Purchase failed. Please try again.'); // Replaced Toast.error
       }
     } finally {
       setPurchasing(false);
@@ -145,7 +145,7 @@ const PremiumScreen: React.FC<PremiumScreenProps> = ({ navigation, route }) => {
       const hasPremium = await revenueCatService.checkPremiumAccess();
       
       if (hasPremium) {
-        Toast.success('Subscription restored!');
+        toast.success('Subscription restored!'); // Replaced Toast.success
         
         // If this was during onboarding, continue to main app
         if (isFromOnboarding) {
@@ -158,11 +158,11 @@ const PremiumScreen: React.FC<PremiumScreenProps> = ({ navigation, route }) => {
           navigation.goBack();
         }
       } else {
-        Toast.info('No active subscription found');
+        toast('No active subscription found'); // Replaced Toast.info
       }
     } catch (error) {
       console.error('Restore error:', error);
-      Toast.error('Failed to restore purchases');
+      toast.error('Failed to restore purchases'); // Replaced Toast.error
     } finally {
       setRestoring(false);
     }

@@ -4,10 +4,10 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import type { TabScreenProps } from '../../navigation/types';
-import type { Profile } from '../home/HomeScreen';
+import type { Profile } from '../home/ProfileCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/MaterialIcons';
-import Toast from "toastify-react-native"
+import { toast } from 'sonner-native';
 
 export const FavoriteScreen: React.FC<TabScreenProps<'Favorites'>> = ({ navigation }) => {
   const [favorites, setFavorites] = useState<Profile[]>([]);
@@ -37,7 +37,7 @@ export const FavoriteScreen: React.FC<TabScreenProps<'Favorites'>> = ({ navigati
     } catch (error) {
       console.error('Error loading favorites:', error);
       // Keep critical error toast
-      Toast.error("Load Failed");
+      toast.error("Load Failed");
     } finally {
       setLoading(false);
     }
@@ -63,7 +63,7 @@ export const FavoriteScreen: React.FC<TabScreenProps<'Favorites'>> = ({ navigati
       // Reload favorites to restore correct state if operation failed
       loadFavorites();
       // Keep error toast for operation failures
-      Toast.error("Action Failed");
+      toast.error("Action Failed");
     }
   };
 

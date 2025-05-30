@@ -333,7 +333,7 @@ class NotificationService {
       }
 
       // Check if blocked - avoid showing request if already blocked
-      const isBlocked = await this.isPermissionBlocked();
+      const isBlocked = await this.permissionsService.isPermissionBlocked('notification');
       if (isBlocked) {
         console.log('Notification permission is blocked - should open settings');
         this.permissionRequestInProgress = false;
@@ -383,7 +383,7 @@ class NotificationService {
   // Check if permission is blocked
   public async isPermissionBlocked(): Promise<boolean> {
     try {
-      return await this.permissionsService.isPermissionBlocked();
+      return await this.permissionsService.isPermissionBlocked('notification');
     } catch (error) {
       console.error('Error checking if permission is blocked:', error);
       return false;
@@ -420,4 +420,4 @@ class NotificationService {
   }
 }
 
-export default NotificationService; 
+export default NotificationService;

@@ -1,18 +1,26 @@
-import { Alert, Button, NativeEventEmitter, PermissionsAndroid, StyleSheet, Text, View, NativeModules } from 'react-native'
+import { Alert, Button, NativeEventEmitter, PermissionsAndroid, StyleSheet, Text, View, NativeModules, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import PayUBizSdk from 'payu-non-seam-less-react';
 import { sha512 } from 'js-sha512';
+import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
+import { RootStackParamList } from '../../navigation/types';
+
+type PaymentScreenRouteProp = RouteProp<RootStackParamList, 'Payment'>;
 
 const PaymentScreen = () => {
+    const route = useRoute<PaymentScreenRouteProp>();
+    const navigation = useNavigation();
+    const { amount: initialAmount, coins: purchasedCoins } = route.params;
+
     const [key,setKey]=useState("3LySeo");
     const [merchantSalt, setMerchantSalt] = useState("qzDFCG4c3ocV6m8Z0GbazBsvfqvIXlZO");
 
-    const [amount, setAmount] = useState('2');
-    const [productInfo, setProductInfo] = useState('food  order');
-    const [firstName, setFirstName] = useState('Anirban');
+    const [amount, setAmount] = useState(initialAmount.toString()); // Use initialAmount from params
+    const [productInfo, setProductInfo] = useState('Diamond Purchase'); // Changed product info
+    const [firstName, setFirstName] = useState('User'); // Placeholder, ideally from user profile
 
-    const [email, setEmail] = useState('dfjufj@gmail.com');
-    const [phone, setPhone] = useState('8454564567');
+    const [email, setEmail] = useState('user@example.com'); // Placeholder, ideally from user profile
+    const [phone, setPhone] = useState('9999999999'); // Placeholder, ideally from user profile
 
     const [ios_surl, setIosSurl] = useState(
         'https://success-nine.vercel.app',
@@ -39,13 +47,13 @@ const PaymentScreen = () => {
   const [primaryColor, setPrimaryColor] = useState('#4c31ae');
 
   const [secondaryColor, setSecondaryColor] = useState('#022daf');
-  const [merchantName, setMerchantName] = useState('DEMO PAY U');
+  const [merchantName, setMerchantName] = useState('Luvsab Diamonds'); // Updated merchant name
   const [merchantLogo, setMerchantLogo] = useState("" );
 
   const [cartDetails, setCartDetails] = useState([
-    {Order: 'Food Order'},
-    {'order Id': '123456'},
-    {'Shop name': 'Food Shop'},
+    {Order: 'Diamond Purchase'},
+    {'order Id': new Date().getTime().toString()}, // Dynamic order ID
+    {'Item': `${purchasedCoins} Diamonds`}, // Show purchased coins
   ]);
   const [paymentModesOrder, setPaymentModesOrder] = useState([
     {UPI: 'TEZ'},
@@ -67,6 +75,22 @@ const PaymentScreen = () => {
   ] = useState(true);
 
   const [autoSelectOtp, setAutoSelectOtp] = useState(true);
+
+  useEffect(() => {
+    // Update amount and cart details if route params change (though unlikely in this flow)
+    setAmount(initialAmount.toString());
+    setCartDetails([
+      {Order: 'Diamond Purchase'},
+      {'order Id': new Date().getTime().toString()},
+      {'Item': `${purchasedCoins} Diamonds`},
+    ]);
+  }, [initialAmount, purchasedCoins]);
+
+  // Automatically launch payment when component mounts
+  useEffect(() => {
+    lunchPayUPayment();
+  }, []); // Empty dependency array ensures it runs only once on mount
+
 
   const requestSMSPermission = async () => {
     try {
@@ -98,22 +122,27 @@ const PaymentScreen = () => {
     console.log(e.merchantResponse);
      console.log(e.payuResponse);
      displayAlert('onPaymentSuccess', "Payment success");
+     // Navigate back to VideoCallScreen or ChatScreen on success
+     navigation.goBack(); // Or navigate to a specific success screen
    };
 
    const onPaymentFailure = (e: any) => {
     console.log(e.merchantResponse);
     console.log(e.payuResponse);
     displayAlert('onPaymentFailure', JSON.stringify(e));
+    navigation.goBack(); // Go back on failure
   }
 
 
   const onPaymentCancel = (e: any) => {
     console.log('onPaymentCancel isTxnInitiated -' + e);
     displayAlert('onPaymentCancel', JSON.stringify(e));
+    navigation.goBack(); // Go back on cancel
   }
 
   const onError = (e: any) => {
  displayAlert('onError', JSON.stringify(e));
+ navigation.goBack(); // Go back on error
   };
 
 
@@ -219,16 +248,32 @@ const PaymentScreen = () => {
 }
 
   return (
-    <View>
-      <Text style={{fontSize:20,marginVertical:20}}>Your  payable Amount is {amount}</Text>
-      <Button
-      title='Pay Now'
-      onPress={lunchPayUPayment}
-      />
+    <View style={styles.container}>
+      <ActivityIndicator size="large" color="#EC4899" />
+      <Text style={styles.loadingText}>Redirecting to payment gateway...</Text>
+      <Text style={styles.amountText}>Your payable Amount is ₹{amount} for {purchasedCoins} Diamonds</Text>
     </View>
   )
 }
 
 export default PaymentScreen
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#111827', // Dark background
+  },
+  loadingText: {
+    fontSize: 18,
+    color: '#FFFFFF',
+    marginTop: 20,
+  },
+  amountText: {
+    fontSize: 16,
+    color: '#9CA3AF',
+    marginTop: 10,
+    textAlign: 'center',
+  },
+})

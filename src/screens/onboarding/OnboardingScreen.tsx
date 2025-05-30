@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../hooks/authContext';
 import { MotiView } from 'moti';
 
-import Toast from "toastify-react-native"
+import { toast } from "sonner-native"
 import Svg, { Path } from 'react-native-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -168,11 +168,11 @@ export const OnboardingScreen = () => {
             
             // Show appropriate toast based on result
             if (permissionStatus === RESULTS.GRANTED) {
-              Toast.success('Notifications enabled!');
+              toast.success('Notifications enabled!');
             } else if (permissionStatus === RESULTS.DENIED) {
-              Toast.warn('Notification permissions denied');
+              toast.error('Notification permissions denied');
             } else if (permissionStatus === RESULTS.BLOCKED) {
-              Toast.error('Notifications blocked. Please enable in settings.');
+              toast.error('Notifications blocked. Please enable in settings.');
             }
           }
           
@@ -191,7 +191,7 @@ export const OnboardingScreen = () => {
     } catch (error) {
       console.error('Error during login:', error);
       setIsLoading(false);
-      Toast.error('Login failed. Please try again.');
+      toast.error('Login failed. Please try again.');
     }
   };
 
@@ -510,4 +510,3 @@ export const OnboardingScreen = () => {
     </View>
   );
 };
-

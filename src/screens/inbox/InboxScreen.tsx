@@ -6,9 +6,9 @@ import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { TabScreenProps } from '../../navigation/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ConversationData } from '../chat/ChatScreen';
-import Toast from "toastify-react-native"
+import { toast } from 'sonner-native';
 import { LinearGradient } from 'react-native-linear-gradient';
-import type { Profile, StyleType } from '../home/HomeScreen';
+import type { Profile, StyleType } from '../home/ProfileCard';
 
 // Helper function to format timestamps
 const formatMessageTime = (date: Date | string): string => {
@@ -159,14 +159,14 @@ export const InboxScreen: React.FC<TabScreenProps<'Inbox'>> = ({ navigation }) =
       await AsyncStorage.setItem('inbox_conversations', JSON.stringify(updatedConversations));
       
       // Remove unnecessary toast
-      // Toast.success("Conversation Deleted");
+      // toast.success("Conversation Deleted"); // Use basic toast for info
       
       // Close modal
       setShowDeleteModal(false);
     } catch (error) {
       console.error('Error deleting conversation:', error);
       // Keep error toast for critical failures only
-      Toast.error("Delete Failed");
+      toast.error("Delete Failed");
     }
   };
 

@@ -7,13 +7,13 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { getCharacters } from '../../api/services';
-import { Profile, StyleType } from '../home/HomeScreen';
+import { Profile, StyleType } from '../home/ProfileCard';
 import Ionicons from 'react-native-vector-icons/MaterialIcons';
 import BannerAdComponent from '../../components/ads/BannerAdComponent';
 import { BannerAdSize } from 'react-native-google-mobile-ads';
 import AdMobService from '../../services/AdMobService';
 import { useCoinStore } from '../../store/useCoinStore';
-import Toast from 'toastify-react-native';
+import { toast } from 'sonner-native';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = (SCREEN_WIDTH - 48) / 2;
@@ -153,14 +153,14 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
       if (reward) {
         const rewardAmount = 15;
         addCoins(rewardAmount);
-        Toast.success(`You earned ${rewardAmount} coins and unlocked premium profiles!`);
+        toast.success(`You earned ${rewardAmount} coins and unlocked premium profiles!`);
         setShowPremiumOnly(true);
       } else {
-        Toast.info('You closed the ad before earning a reward');
+        toast('You closed the ad before earning a reward');
       }
     } catch (error) {
       console.log('Error showing rewarded ad:', error);
-      Toast.error('Failed to show ad. Please try again.');
+      toast.error('Failed to show ad. Please try again.');
     }
   };
 
@@ -222,7 +222,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
     if (profile.isPremium && !showPremiumOnly) {
       if (coins >= 5) {
         // Use coins to unlock premium
-        Toast.info('Using 5 coins to access premium profile');
+        toast('Using 5 coins to access premium profile');
         navigation.navigate('Character', { profile });
       } else {
         // Show rewarded ad
@@ -235,7 +235,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ navigation }) => {
   };
   
   const showPremiumAdPrompt = () => {
-    Toast.info('Watch an ad to unlock premium profiles!');
+    toast('Watch an ad to unlock premium profiles!');
     showRewardedAd();
   };
 

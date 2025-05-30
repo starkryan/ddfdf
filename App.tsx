@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import "./global.css"
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import ToastManager from 'toastify-react-native';
+import { Toaster } from 'sonner-native';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import './src/locales/i18n';
 import { StatusBar, StyleSheet, Platform, View, AppState, AppStateStatus, NativeModules, Vibration } from 'react-native';
@@ -30,7 +30,6 @@ import IncomingCall from './src/components/IncomingCall'; // Import the new comp
 import { getFeaturedCharacters } from './src/api/services/character'; // Import character service
 import { getMediaVideoUrls } from './src/api/services/media'; // Import new media service
 import Sound from 'react-native-sound'; // Import react-native-sound
-// import axios from 'axios'; // Remove axios import
 
 // Define global type for our app-specific globals
 declare global {
@@ -479,31 +478,10 @@ const App = () => {
               }
             }}
           >
-            <AppNavigator triggerIncomingCall={triggerIncomingCall} />
+            <AppNavigator triggerIncomingCall={triggerIncomingCall}  />
           </NavigationContainer>
-        </AuthProvider><ToastManager
-          height={60}
-          width={300}
-          duration={3000}
-          position="top"
-          style={{
-            backgroundColor: '#1F2937',
-            borderRadius: 12,
-            shadowColor: "#000",
-            shadowOffset: {
-              width: 0,
-              height: 2,
-            },
-            shadowOpacity: 0.25,
-            shadowRadius: 3.84,
-            elevation: 5,
-          }}
-          textStyle={{
-            color: '#FFFFFF',
-            fontSize: 14,
-            fontWeight: '500',
-          }}
-        />
+        </AuthProvider>
+        <Toaster />
       </GestureHandlerRootView>
       {showSplash && <SplashScreen onAnimationFinish={handleSplashFinish} />}
       {showIncomingCall && incomingCharacter && fetchedVideoUrls.length > 0 && (

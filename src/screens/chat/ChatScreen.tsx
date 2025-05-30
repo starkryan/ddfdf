@@ -6,12 +6,12 @@ import { sendMessage } from '../../api/services/chat';
 import { Message } from '../../api/services/character';
 import { reportMessage as reportAPI } from '../../api/services/report';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { Profile } from '../home/HomeScreen';
+import type { Profile } from '../home/ProfileCard';
 import { LinearGradient } from 'react-native-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRewardedAd } from '../../hooks/useAdMob';
 import { useCoinStore } from '../../store/useCoinStore';
-import Toast from 'toastify-react-native';
+import { toast } from 'sonner-native'; // Changed import
 import BannerAdComponent from '../../components/ads/BannerAdComponent';
 import { BannerAdSize } from 'react-native-google-mobile-ads';
 import MarkdownMessage from '../../components/MarkdownMessage';
@@ -184,7 +184,7 @@ function ChatScreen({ route, navigation }: Props) {
     if (earned && reward) {
       const rewardAmount = 10;
       addCoins(rewardAmount);
-      Toast.success(`You earned ${rewardAmount} coins! Continue chatting.`);
+      toast.success(`You earned ${rewardAmount} coins! Continue chatting.`); // Replaced Toast.success
       setShowRewardedAdPrompt(false);
       setMessageCount(0);
     }
@@ -271,7 +271,7 @@ function ChatScreen({ route, navigation }: Props) {
       // If user has enough coins, just deduct and continue
       if (coins >= 2) {
         removeCoins(2);
-        Toast.info('2 coins used for more messages');
+        toast('2 coins used for more messages'); // Replaced Toast.info
         return true;
       } else {
         setShowRewardedAdPrompt(true);
@@ -287,13 +287,13 @@ function ChatScreen({ route, navigation }: Props) {
         await showRewardedAd();
       } catch (error) {
         console.error('Error showing rewarded ad:', error);
-        Toast.error('Failed to show ad. Please try again.');
+        toast.error('Failed to show ad. Please try again.'); // Replaced Toast.error
       }
     } else {
-      Toast.info('Ad not ready yet. Loading...');
+      toast('Ad not ready yet. Loading...'); // Replaced Toast.info
       try {
         await loadRewardedAd();
-        Toast.info('Please try again in a moment');
+        toast('Please try again in a moment'); // Replaced Toast.info
       } catch (err) {
         console.error('Failed to load rewarded ad:', err);
       }
@@ -311,12 +311,12 @@ function ChatScreen({ route, navigation }: Props) {
   // Submit report
   const handleSubmitReport = async () => {
     if (!reportedMessage || !reportReason) {
-      Toast.error('Please select a reason for reporting');
+      toast.error('Please select a reason for reporting'); // Replaced Toast.error
       return;
     }
     
     if (!isAuthenticated) {
-      Toast.error('Authentication required to submit report');
+      toast.error('Authentication required to submit report'); // Replaced Toast.error
       return;
     }
     
@@ -335,13 +335,13 @@ function ChatScreen({ route, navigation }: Props) {
         }
       });
       
-      Toast.success('Thank you for your report');
+      toast.success('Thank you for your report'); // Replaced Toast.success
       setShowReportModal(false);
       setReportedMessage(null);
       setReportReason('');
     } catch (error) {
       console.error('Error submitting report:', error);
-      Toast.error('Failed to submit report. Please try again.');
+      toast.error('Failed to submit report. Please try again.'); // Replaced Toast.error
     } finally {
       setIsSubmittingReport(false);
     }
@@ -419,7 +419,7 @@ function ChatScreen({ route, navigation }: Props) {
     
     // Check if user can send more messages
     if (showRewardedAdPrompt) {
-      Toast.info('Please watch an ad or use coins to continue');
+      toast('Please watch an ad or use coins to continue'); // Replaced Toast.info
       return;
     }
     
@@ -551,7 +551,7 @@ function ChatScreen({ route, navigation }: Props) {
               onPress={() => {
                 removeCoins(2);
                 setShowRewardedAdPrompt(false);
-                Toast.info('2 coins used for more messages');
+                toast('2 coins used for more messages'); // Replaced Toast.info
               }}
             >
               <Icon name="coins" size={18} color="#FFF" />
@@ -572,7 +572,7 @@ function ChatScreen({ route, navigation }: Props) {
 
   // Handle call button press
   const handleCallPress = async () => {
-    Toast.info("Connecting call...");
+    toast('Connecting call...'); // Replaced Toast.info
     
     try {
       if (interstitialAdLoaded) {
@@ -582,13 +582,13 @@ function ChatScreen({ route, navigation }: Props) {
         // Show modal instead of simple toast
         setShowCallModal(true);
       } else {
-        Toast.info("Loading call interface...");
+        toast('Loading call interface...'); // Replaced Toast.info
         await loadInterstitialAd();
-        Toast.info("Please try calling again.");
+        toast('Please try calling again.'); // Replaced Toast.info
       }
     } catch (err: unknown) {
       console.error('Error showing call ad:', err);
-      Toast.error("Couldn't connect the call. Try again later.");
+      toast.error("Couldn't connect the call. Try again later."); // Replaced Toast.error
     }
   };
 
@@ -764,16 +764,15 @@ function ChatScreen({ route, navigation }: Props) {
                   >
                     <Icon name="phone" size={20} color="#22C55E" />
                   </TouchableOpacity>
-                  <TouchableOpacity 
+                  <View 
                     className="bg-white/10 backdrop-blur-xl border border-white/20 px-3 py-2 rounded-xl flex-row items-center"
-                    onPress={() => Toast.info("Current coin balance")}
                   >
                     <Image 
                       source={require('../../../assets/coin.png')} 
                       className="w-5 h-5 mr-1.5"
                     />
                     <Text className="text-white font-medium">{coins}</Text>
-                  </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             </View>

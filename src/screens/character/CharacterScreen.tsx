@@ -15,11 +15,11 @@ import { LinearGradient } from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Animated, { SlideInDown } from 'react-native-reanimated';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { Profile } from '../home/HomeScreen';
+import type { Profile } from '../home/ProfileCard';
 import { getCharacterById } from '../../api/services';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/MaterialIcons';
-import Toast from "toastify-react-native"
+import { toast } from 'sonner-native';
 import { useInterstitialAd } from '../../hooks/useAdMob';
 import { useCoinStore } from '../../store/useCoinStore';
 import BannerAdComponent from '../../components/ads/BannerAdComponent';
@@ -68,7 +68,7 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
     } catch (error) {
       console.error('Failed to fetch character:', error);
       // Keep error toast for critical failures
-      Toast.error("Load Failed");
+      toast.error("Load Failed");
       // Go back if we can't load the character
       navigation.goBack();
     } finally {
@@ -101,7 +101,7 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
         await show();
         // Add coins as a reward for watching the ad
         addCoins(2);
-        Toast.success('You earned 2 coins for chatting!');
+        toast.success('You earned 2 coins for chatting!');
       } catch (err) {
         console.log('Error showing interstitial ad:', err);
       }
@@ -136,7 +136,7 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
         // Remove from favorites
         favorites = favorites.filter(fav => fav.id !== profile.id);
         // Remove unnecessary toast - the heart icon change is sufficient visual feedback
-        // Toast.info("Removed from Favorites");
+        // toast("Removed from Favorites"); // Use basic toast for info
       }
       
       // Save updated favorites
@@ -146,7 +146,7 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
       // Revert UI state if operation failed
       setIsLiked(!newStatus);
       // Keep this toast for error feedback
-      Toast.error("Action Failed");
+      toast.error("Action Failed");
     }
   };
 
@@ -307,7 +307,7 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
               <Text className="text-white text-xl font-semibold ml-2">Interests</Text>
             </View>
             <View className="flex-row flex-wrap gap-2">
-              {(profile.interests && profile.interests.length > 0 ? profile.interests : ['Reading', 'Travel', 'Art', 'Music', 'Photography']).map((interest) => (
+              {(profile.interests && profile.interests.length > 0 ? profile.interests : ['Reading', 'Travel', 'Art', 'Music', 'Photography']).map((interest: string) => (
                 <View
                   key={interest}
                   className="bg-white/10 backdrop-blur-xl border border-white/10 rounded-xl px-4 py-2"
@@ -345,7 +345,7 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
                 Interests
               </Text>
               <View className="flex-row flex-wrap gap-2 mb-4">
-                {profile.interests?.map((interest, index) => (
+                {profile.interests?.map((interest: string, index: number) => (
                   <View key={index} className="bg-white/10 backdrop-blur-xl rounded-full px-3 py-1">
                     <Text className="text-white">{interest}</Text>
                   </View>
@@ -356,7 +356,7 @@ const CharacterScreen: React.FC<CharacterScreenProps> = ({ route, navigation }) 
                 Traits
               </Text>
               <View className="flex-row flex-wrap gap-2">
-                {profile.traits?.map((trait, index) => (
+                {profile.traits?.map((trait: string, index: number) => (
                   <View key={index} className="bg-white/10 backdrop-blur-xl rounded-full px-3 py-1">
                     <Text className="text-white">{trait}</Text>
                   </View>

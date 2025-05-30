@@ -5,7 +5,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import Icon from 'react-native-vector-icons/Ionicons';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { getCharacters } from '../../api/services';
-import Toast from "toastify-react-native";
+import { toast } from 'sonner-native';
 import { TabScreenProps } from '../../navigation/types';
 import BannerAdComponent from '../../components/ads/BannerAdComponent';
 import NativeAdComponent from '../../components/ads/NativeAdComponent';
@@ -248,7 +248,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, triggerIncom
     } catch (error) {
       console.error('Failed to fetch characters:', error);
       setLoading(false);
-      Toast.error("Network Error");
+      toast.error("Network Error");
       setCharacters(mockProfiles.map((profile, index) => ({
         ...profile,
         isNew: index < 2

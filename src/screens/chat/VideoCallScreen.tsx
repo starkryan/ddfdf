@@ -5,7 +5,9 @@ import Video from 'react-native-video';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useRoute, useNavigation, NavigationProp } from '@react-navigation/native';
 import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
+import InCallManager from 'react-native-incall-manager';
 import { RootStackParamList } from '../../navigation/types';
+import DiamondPurchaseModal from '../../components/DiamondPurchaseModal';
 
 const { width, height } = Dimensions.get('window');
 
@@ -22,7 +24,8 @@ const VideoCallScreen: React.FC = () => {
   const [currentVideoUrl, setCurrentVideoUrl] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState(true); // Mute video voice by default
   const [isCameraOn, setIsCameraOn] = useState(false); // Reintroduce isCameraOn state
-  const [isSpeakerOn, setIsSpeakerOn] = useState(true); // State for speaker
+  const [isSpeakerOn, setIsSpeakerOn] = useState(true); // State for speakerphone
+  const [showDiamondPurchaseModal, setShowDiamondPurchaseModal] = useState(false);
 
   const { hasPermission, requestPermission } = useCameraPermission();
   const cameraDevice = useCameraDevice('front'); // Use front camera for user's video
@@ -45,11 +48,18 @@ const VideoCallScreen: React.FC = () => {
     checkInitialCameraPermission();
 
     const callTimeout = setTimeout(() => {
-      handleEndCallAndNavigateToPremium();
+      // Instead of navigating to Premium, show the diamond purchase modal
+      setShowDiamondPurchaseModal(true);
     }, 10000);
 
-    return () => clearTimeout(callTimeout);
-  }, [videoUrls, hasPermission]);
+    InCallManager.start({ media: 'audio' });
+    InCallManager.setSpeakerphoneOn(isSpeakerOn);
+
+    return () => {
+      clearTimeout(callTimeout);
+      InCallManager.stop();
+    };
+  }, [videoUrls, hasPermission, isSpeakerOn]);
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
@@ -58,8 +68,17 @@ const VideoCallScreen: React.FC = () => {
   };
 
   const handleEndCallAndNavigateToPremium = () => {
-    navigation.goBack();
-    navigation.navigate('Premium', { fromOnboarding: false });
+    // This function is now primarily for the timeout, but we're changing its behavior
+    // to show the modal instead of navigating directly.
+    // If there's a scenario where we still want to navigate to Premium directly,
+    // this function might need to be renamed or refactored.
+    setShowDiamondPurchaseModal(true);
+  };
+
+  const handlePurchaseDiamonds = (amount: number, coins: number) => {
+    // This function will be passed to the modal and can be used to trigger payment logic
+    console.log(`Attempting to purchase ${coins} coins for ₹${amount}`);
+    // The modal itself will handle navigation to the Payment screen
   };
 
   const toggleMute = () => {
@@ -89,7 +108,9 @@ const VideoCallScreen: React.FC = () => {
   };
 
   const toggleSpeaker = () => {
-    setIsSpeakerOn(prev => !prev);
+    const newState = !isSpeakerOn;
+    setIsSpeakerOn(newState);
+    InCallManager.setSpeakerphoneOn(newState);
   };
 
   if (cameraDevice == null) {
@@ -179,6 +200,15 @@ const VideoCallScreen: React.FC = () => {
           <Text className="text-white text-lg">Uh ho. Something went wrong.</Text>
         </View>
       )}
+
+      <DiamondPurchaseModal
+        isVisible={showDiamondPurchaseModal}
+        onClose={() => {
+          setShowDiamondPurchaseModal(false);
+          navigation.goBack(); // Go back when modal is closed
+        }}
+        onPurchase={handlePurchaseDiamonds}
+      />
     </SafeAreaView>
   );
 };

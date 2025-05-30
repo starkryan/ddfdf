@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAuth } from '../../hooks/authContext';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { getCurrentUser } from '../../services/FirebaseService';
-import Toast from 'toastify-react-native';
+import { toast } from 'sonner-native';
 import NotificationService from '../../services/NotificationService';
 import { check, request, RESULTS, openSettings, Permission } from 'react-native-permissions';
 import messaging, {
@@ -90,7 +90,7 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
         }
       } catch (error) {
         console.error('Error loading user info:', error);
-        Toast.error("Error loading user info");
+        toast.error("Error loading user info");
       }
     };
     loadUserInfo();
@@ -139,11 +139,11 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
 
       // Show toast after a delay to not interfere with navigation
       setTimeout(() => {
-        Toast.success("User logged out successfully");
+        toast.success("User logged out successfully");
       }, 500);
     } catch (error) {
       console.error('Error during logout:', error);
-      Toast.error("Error during logout");
+      toast.error("Error during logout");
     }
   };
 
@@ -159,10 +159,10 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
         avatar: userProfile?.avatar || DEFAULT_AVATAR
       });
       setShowEditModal(false);
-      Toast.success("Profile updated successfully");
+      toast.success("Profile updated successfully");
     } catch (error) {
       console.error('Error updating profile:', error);
-      Toast.error("Error updating profile");
+      toast.error("Error updating profile");
     }
   };
 
@@ -199,10 +199,10 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
           // Use modular API for Firebase Cloud Messaging
           const fcmToken = await getToken(messagingInstance);
 
-          Toast.success('Notifications enabled');
+          toast.success('Notifications enabled');
         } else {
           setNotificationsEnabled(false);
-          Toast.error('Permission denied');
+          toast.error('Permission denied');
         }
       } else {
         // If trying to disable, direct to settings since we can't programmatically disable
@@ -223,21 +223,21 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
       }
     } catch (error) {
       // console.error('Error toggling notifications:', error);
-      Toast.error('Failed to toggle notifications');
+      toast.error('Failed to toggle notifications');
     }
   };
 
   const handlePrivacyPress = () => {
     Linking.openURL(PRIVACY_POLICY_URL).catch((err) => {
       console.error('Error opening privacy policy:', err);
-      Toast.error('Could not open privacy policy');
+      toast.error('Could not open privacy policy');
     });
   };
 
   const handleHelpSupport = () => {
     Linking.openURL(HELP_SUPPORT_URL).catch((err) => {
       console.error('Error opening help & support:', err);
-      Toast.error('Could not open help & support');
+      toast.error('Could not open help & support');
     });
   };
 
@@ -343,7 +343,7 @@ export const ProfileScreen: React.FC<TabScreenProps<'Profile'>> = ({ navigation 
             <SettingItem 
               icon="credit-card" 
               title="Make a Payment" 
-              onPress={() => navigation.navigate('Payment')}
+              onPress={() => navigation.navigate('Payment', { amount: 0, coins: 0 })}
               description="Access payment options" 
             />
 
