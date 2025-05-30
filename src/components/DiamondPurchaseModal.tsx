@@ -1,11 +1,8 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Modal, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/types';
-
-const { width, height } = Dimensions.get('window');
-
 interface DiamondPurchaseModalProps {
   isVisible: boolean;
   onClose: () => void;
@@ -38,150 +35,46 @@ const DiamondPurchaseModal: React.FC<DiamondPurchaseModalProps> = ({ isVisible, 
       visible={isVisible}
       onRequestClose={onClose}
     >
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+      <View className="flex-1 justify-center items-center bg-black/70">
+        <View className="m-5 bg-white rounded-2xl p-8 items-center shadow-lg shadow-black/25 elevation-5 w-[85%] max-h-[70%]">
+          <TouchableOpacity className="absolute top-2.5 right-2.5 z-10" onPress={onClose}>
             <Icon name="close-circle" size={30} color="#999" />
           </TouchableOpacity>
-          <Text style={styles.modalTitle}>Purchase Diamonds</Text>
-          <Text style={styles.modalSubtitle}>Recharge to continue talking!</Text>
+          <Text className="text-2xl font-bold mb-2.5 text-gray-800">Purchase Diamonds</Text>
+          <Text className="text-base text-gray-600 mb-5 text-center">Recharge to continue talking!</Text>
 
           {diamondPackages.map((pack) => (
             <TouchableOpacity
               key={pack.id}
-              style={[
-                styles.packageCard,
-                pack.tag === 'Best Value' && styles.premiumPackage,
-                pack.tag === 'Hot' && styles.hotPackage,
-              ]}
+              className={`
+                flex-row items-center bg-gray-100 rounded-lg p-4 my-2.5 w-full shadow-sm shadow-black/20 elevation-2 relative
+                ${pack.tag === 'Best Value' ? 'bg-yellow-50 border-2 border-yellow-400' : ''}
+                ${pack.tag === 'Hot' ? 'bg-red-50 border-2 border-red-400' : ''}
+              `}
               onPress={() => handleNavigateToPayment(pack.amount, pack.coins)}
             >
               <Icon name="diamond-stone" size={30} color={pack.tag === 'Best Value' ? '#FFD700' : '#00BFFF'} />
-              <View style={styles.packageDetails}>
-                <Text style={styles.packageCoins}>{pack.label}</Text>
-                <Text style={styles.packagePrice}>{pack.price}</Text>
+              <View className="ml-4">
+                <Text className="text-lg font-bold text-gray-800">{pack.label}</Text>
+                <Text className="text-base text-gray-700 mt-1.5">{pack.price}</Text>
               </View>
               {pack.tag && (
-                <View style={[styles.tagContainer, pack.tag === 'Best Value' ? styles.bestValueTag : styles.hotTag]}>
-                  <Text style={styles.tagText}>{pack.tag}</Text>
+                <View className={`
+                  absolute -top-2.5 -right-2.5 px-2 py-1 rounded-xl z-20
+                  ${pack.tag === 'Best Value' ? 'bg-yellow-500' : ''}
+                  ${pack.tag === 'Hot' ? 'bg-red-500' : ''}
+                `}>
+                  <Text className="text-white text-xs font-bold">{pack.tag}</Text>
                 </View>
               )}
             </TouchableOpacity>
           ))}
 
-          <Text style={styles.noteText}>Your conversation will resume after successful recharge.</Text>
+          <Text className="text-xs text-gray-600 mt-5 text-center">Your conversation will resume after successful recharge.</Text>
         </View>
       </View>
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.7)',
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    width: width * 0.85,
-    maxHeight: height * 0.7,
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    zIndex: 1,
-  },
-  modalTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333',
-  },
-  modalSubtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  packageCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0',
-    borderRadius: 10,
-    padding: 15,
-    marginVertical: 10,
-    width: '100%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    elevation: 2,
-    position: 'relative', // For positioning the tag
-  },
-  premiumPackage: {
-    backgroundColor: '#FFFACD', // Light gold for premium
-    borderWidth: 2,
-    borderColor: '#FFD700', // Gold border
-  },
-  hotPackage: {
-    backgroundColor: '#FFEBEE', // Light red for hot
-    borderWidth: 2,
-    borderColor: '#FF6347', // Orange-red border
-  },
-  packageDetails: {
-    marginLeft: 15,
-  },
-  packageCoins: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  packagePrice: {
-    fontSize: 16,
-    color: '#555',
-    marginTop: 5,
-  },
-  tagContainer: {
-    position: 'absolute',
-    top: -10,
-    right: -10,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 10,
-    zIndex: 2,
-  },
-  bestValueTag: {
-    backgroundColor: '#FFD700', // Gold
-  },
-  hotTag: {
-    backgroundColor: '#FF6347', // Orange-red
-  },
-  tagText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  noteText: {
-    fontSize: 12,
-    color: '#888',
-    marginTop: 20,
-    textAlign: 'center',
-  },
-});
 
 export default DiamondPurchaseModal;

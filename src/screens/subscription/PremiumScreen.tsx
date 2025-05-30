@@ -17,7 +17,7 @@ import { toast } from 'sonner-native'; // Changed import
 import { useAuth } from '../../hooks/authContext';
 
 // Import background image
-const bgImage = require('../../../assets/bg.jpeg');
+const bgImage = require('../../../assets/glamour.png');
 
 // Define benefit items
 const premiumBenefits = [

@@ -80,7 +80,7 @@ const IncomingCall: React.FC<IncomingCallProps> = ({ videoUrls, callerName, call
 
   return (
     <ImageBackground
-      source={backgroundImage ? { uri: backgroundImage } : require('../../assets/bg.jpeg')} // Use backgroundImage prop or default
+      source={backgroundImage ? { uri: backgroundImage } : require('../../assets/glamour.png')} // Use backgroundImage prop or default
       style={styles.fullscreenContainer}
       resizeMode="cover"
     >
